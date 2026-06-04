@@ -341,15 +341,18 @@ interface HeroProps {
 
 const Hero: FC<HeroProps> = ({ t, apiBaseUrl, mapboxAccessToken }) => (
   <section id="top" className="relative isolate overflow-hidden bg-[#0B1F33]">
-    {/* Background: a center-cropped, dimmed YouTube video acting as a watermark.
+    {/* Background: a center-cropped, lightly-tinted YouTube video acting as a watermark.
         - YouTube UI (title bar, channel name, "More videos" panel) is cropped
-          out via the 1.5x scale + negative offset inside an overflow:hidden
-          wrapper.
+          out via the 1.5x scale + overflow:hidden.
         - `pointer-events:none` so the video can never be clicked or focused.
-        - Brightness/saturate/blur applied for the subtle "watermark" look.
-        - Two strong dark overlays above ensure hero text always has AA contrast. */}
+        - Light filter so the video stays clearly visible — like the
+          Addison Lee car-moving shot. Only a subtle 60% brightness +
+          90% saturation tint so it doesn't compete with the gold.
+        - A horizontal gradient (dark-left → clear-right) ensures the
+          text column is always readable, while the right half of the
+          hero shows the video through clearly. */}
     <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 scale-[1.5] origin-center">
+      <div className="absolute inset-0 scale-[1.5] origen-center">
         <iframe
           src={`https://www.youtube.com/embed/${FEATURED_VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${FEATURED_VIDEO_ID}&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1&fs=0&playsinline=1&iv_load_policy=3&disable_picture_in_picture&widget_referrer=${typeof window !== 'undefined' ? window.location.origin : ''}`}
           title=""
@@ -358,11 +361,28 @@ const Hero: FC<HeroProps> = ({ t, apiBaseUrl, mapboxAccessToken }) => (
           style={{
             border: 0,
             pointerEvents: 'none',
-            filter: 'brightness(0.4) saturate(0.7) blur(1.5px)',
+            filter: 'brightness(0.6) saturate(0.9)',
           }}
           allow="autoplay; encrypted-media; accelerometer; gyroscope; picture-in-picture"
         />
       </div>
+      {/* Horizontal gradient: dark on the left (text), clear on the right (video) */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(90deg, rgba(11,31,51,0.88) 0%, rgba(11,31,51,0.72) 30%, rgba(11,31,51,0.30) 55%, rgba(11,31,51,0.10) 100%)',
+        }}
+      />
+      {/* Subtle top fade for the eyebrow line + headline */}
+      <div
+        className="absolute inset-x-0 top-0 h-40"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(11,31,51,0.7) 0%, rgba(11,31,51,0) 100%)',
+        }}
+      />
+    </div>
       {/* Dark gradient overlay for text contrast — strong on top + bottom */}
       <div className="absolute inset-0 bg-[#0B1F33]/75" />
       <div className="absolute inset-0 bg-gradient-to-b from-[#0B1F33]/70 via-[#0B1F33]/55 to-[#0B1F33]/90" />
