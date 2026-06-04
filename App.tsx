@@ -341,16 +341,31 @@ interface HeroProps {
 
 const Hero: FC<HeroProps> = ({ t, apiBaseUrl, mapboxAccessToken }) => (
   <section id="top" className="relative isolate overflow-hidden bg-[#0B1F33]">
-    {/* Background image */}
-    <div className="absolute inset-0 -z-10">
-      <img
-        src={HERO_IMAGE}
-        alt=""
-        aria-hidden="true"
-        className="w-full h-full object-cover opacity-70"
-        loading="eager"
-      />
-      <div className="absolute inset-0 hero-overlay" />
+    {/* Background: a center-cropped, dimmed YouTube video acting as a watermark.
+        - YouTube UI (title bar, channel name, "More videos" panel) is cropped
+          out via the 1.5x scale + negative offset inside an overflow:hidden
+          wrapper.
+        - `pointer-events:none` so the video can never be clicked or focused.
+        - Brightness/saturate/blur applied for the subtle "watermark" look.
+        - Two strong dark overlays above ensure hero text always has AA contrast. */}
+    <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 scale-[1.5] origin-center">
+        <iframe
+          src={`https://www.youtube.com/embed/${FEATURED_VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${FEATURED_VIDEO_ID}&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1&fs=0&playsinline=1&iv_load_policy=3&disable_picture_in_picture&widget_referrer=${typeof window !== 'undefined' ? window.location.origin : ''}`}
+          title=""
+          aria-hidden="true"
+          className="w-full h-full"
+          style={{
+            border: 0,
+            pointerEvents: 'none',
+            filter: 'brightness(0.4) saturate(0.7) blur(1.5px)',
+          }}
+          allow="autoplay; encrypted-media; accelerometer; gyroscope; picture-in-picture"
+        />
+      </div>
+      {/* Dark gradient overlay for text contrast — strong on top + bottom */}
+      <div className="absolute inset-0 bg-[#0B1F33]/75" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0B1F33]/70 via-[#0B1F33]/55 to-[#0B1F33]/90" />
     </div>
 
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-28">
@@ -386,6 +401,19 @@ const Hero: FC<HeroProps> = ({ t, apiBaseUrl, mapboxAccessToken }) => (
               <PhoneIcon className="h-4 w-4" /> {BUSINESS_PHONE}
             </a>
             <span className="text-xs text-gray-300">24 / 7 dispatch · GB</span>
+            <a
+              href={`https://www.youtube.com/watch?v=${FEATURED_VIDEO_ID}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-[#D4AF37] transition"
+            >
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-current">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3 ml-0.5">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </span>
+              <span>Watch the full film</span>
+            </a>
           </div>
         </div>
 
@@ -706,35 +734,26 @@ const ServiceCard: FC<{ icon: 'plane' | 'briefcase' | 'star'; title: string; des
 };
 
 const Video: FC<{ t: AppTranslations }> = ({ t }) => (
-  <section id="video" className="py-20 sm:py-28">
+  <section id="video" className="py-12 sm:py-16 bg-[#0B1F33] text-white">
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center">
-        <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white gold-underline">
-          {t.videoTitle}
-        </h2>
-        <p className="mt-6 max-w-3xl mx-auto text-lg text-gray-600 dark:text-gray-300">{t.videoSubtitle}</p>
-      </div>
-      <div className="mt-10 max-w-4xl mx-auto">
-        <div className="relative aspect-video rounded-lg overflow-hidden shadow-2xl border border-black/10 dark:border-white/10 bg-black">
-          <iframe
-            src={`https://www.youtube.com/embed/${FEATURED_VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${FEATURED_VIDEO_ID}&controls=0&modestbranding=1&rel=0`}
-            title="SEBCO Travels — First Class Service"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="absolute inset-0 w-full h-full"
-          />
+      <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 max-w-4xl mx-auto">
+        <span className="flex-shrink-0 inline-flex items-center justify-center h-16 w-16 rounded-full bg-[#FF0000] text-white">
+          <YouTubeIcon className="h-7 w-7" />
+        </span>
+        <div className="flex-1 text-center md:text-left">
+          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+            {t.videoTitle}
+          </h2>
+          <p className="mt-2 text-sm sm:text-base text-gray-300">{t.videoSubtitle}</p>
         </div>
-        <div className="mt-8 text-center">
-          <a
-            href={BUSINESS_YOUTUBE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-md bg-[#FF0000] text-white px-6 py-3 text-sm font-bold uppercase tracking-wider hover:opacity-90 transition shadow-md"
-          >
-            <YouTubeIcon className="h-5 w-5" /> {t.videoSubscribeCta}
-          </a>
-          <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">{t.videoWatchMore}</p>
-        </div>
+        <a
+          href={BUSINESS_YOUTUBE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-shrink-0 inline-flex items-center gap-2 rounded-md bg-[#FF0000] text-white px-6 py-3 text-sm font-bold uppercase tracking-wider hover:opacity-90 transition shadow-md"
+        >
+          <YouTubeIcon className="h-5 w-5" /> {t.videoSubscribeCta}
+        </a>
       </div>
     </div>
   </section>
