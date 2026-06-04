@@ -1,0 +1,54 @@
+# ===== Dependencies (frontend + backend) =====
+node_modules/
+**/node_modules/
+.pnpm-store/
+
+# ===== Build output =====
+dist/
+build/
+.vite/
+.cache/
+**/dist/
+**/build/
+
+# ===== Runtime / deployment =====
+logs/
+**/logs/
+*.log
+.pm2/
+ecosystem.config.cjs.bak
+
+# ===== Secrets — NEVER commit these =====
+.env
+.env.local
+.env.*.local
+backend/.env
+**/secrets.*
+!**/.env.example
+!**/backend/.env.example
+
+# ===== Test / coverage =====
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# ===== Editor / OS junk =====
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.tmp
+
+# ===== PM2 / deployment backup files =====
+*.tar.gz
+*.zip
+*.bak
+
+# ===== Local image uploads (use real /public/img/ files instead) =====
+public/img/user-uploads/
+public/uploads/

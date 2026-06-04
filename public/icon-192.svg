@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="32" fill="#0B1F33"/>
+  <g transform="translate(36 36) scale(5)">
+    <path d="M0 12 L10 0 H13 a2 2 0 0 1 2 2 V14 a2 2 0 0 1-2 2 H3 a2 2 0 0 1-2-2 V12 z" fill="#D4AF37"/>
+    <rect x="2.5" y="6" width="10" height="6" rx="0.5" fill="#0B1F33"/>
+    <circle cx="4.5" cy="13.5" r="1.2" fill="#0B1F33"/>
+    <circle cx="10.5" cy="13.5" r="1.2" fill="#0B1F33"/>
+  </g>
+  <text x="96" y="168" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="900" fill="#D4AF37" letter-spacing="1">SEBCO</text>
+</svg>

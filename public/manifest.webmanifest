@@ -1,0 +1,47 @@
+{
+  "name": "SEBCO Travels",
+  "short_name": "SEBCO",
+  "description": "Premium family & airport van transfers across the UK. Pre-book in seconds, pay only when you arrive.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0B1F33",
+  "theme_color": "#D4AF37",
+  "lang": "en-GB",
+  "categories": ["travel", "transportation", "business"],
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Book a transfer",
+      "short_name": "Book",
+      "description": "Pre-book a chauffeur-driven van in 60 seconds",
+      "url": "/#book"
+    },
+    {
+      "name": "Popular routes",
+      "short_name": "Routes",
+      "description": "See our most-booked airport routes with fixed prices",
+      "url": "/#routes"
+    },
+    {
+      "name": "Call us",
+      "short_name": "Call",
+      "description": "Speak to a human right now",
+      "url": "tel:+447411113636"
+    }
+  ]
+}

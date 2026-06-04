@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0B1F33"/>
+  <g transform="translate(96 96) scale(13.33)">
+    <path d="M0 12 L10 0 H13 a2 2 0 0 1 2 2 V14 a2 2 0 0 1-2 2 H3 a2 2 0 0 1-2-2 V12 z" fill="#D4AF37"/>
+    <rect x="2.5" y="6" width="10" height="6" rx="0.5" fill="#0B1F33"/>
+    <circle cx="4.5" cy="13.5" r="1.2" fill="#0B1F33"/>
+    <circle cx="10.5" cy="13.5" r="1.2" fill="#0B1F33"/>
+  </g>
+  <text x="256" y="450" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="900" fill="#D4AF37" letter-spacing="4">SEBCO</text>
+  <text x="256" y="486" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" letter-spacing="2" opacity="0.8">PREMIUM TRANSFERS</text>
+</svg>

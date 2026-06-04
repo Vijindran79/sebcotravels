@@ -1,0 +1,10 @@
+# SEBCO Travels — robots.txt
+# Allow all well-behaved crawlers.
+User-agent: *
+Allow: /
+
+# Block crawling of any future admin / api paths if you add them later:
+# Disallow: /admin/
+# Disallow: /api/
+
+Sitemap: https://sebcotravels.co.uk/sitemap.xml

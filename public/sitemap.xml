@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!--
+    Sitemap for SEBCO Travels.
+    Update the host below to your real domain before going live.
+    Add a new <url> block here every time you add a route page.
+  -->
+  <url>
+    <loc>https://sebcotravels.co.uk/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://sebcotravels.co.uk/airport-transfers/reading-heathrow</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sebcotravels.co.uk/airport-transfers/slough-heathrow</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sebcotravels.co.uk/airport-transfers/reading-gatwick</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sebcotravels.co.uk/airport-transfers/oxford-heathrow</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sebcotravels.co.uk/airport-transfers/reading-stansted</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sebcotravels.co.uk/airport-transfers/london-luton</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+</urlset>
