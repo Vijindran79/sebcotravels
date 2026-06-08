@@ -31,13 +31,12 @@ const BUSINESS_WHATSAPP_HREF =
   )}`;
 
 // ===========================================================================
-// YouTube channel — REPLACE WITH YOUR REAL CHANNEL URL.
-// Open YouTube → tap your profile → "View channel" → copy the URL.
-// The single video embedded in the <Video /> section below uses the
-// FEATURED_VIDEO_ID; replace that too with your hero video's ID.
+// Featured hero video — a 4K chauffeur video that plays muted in the
+// background of the hero section. The still image (spacetourer-hero.jpg)
+// sits underneath as a poster, so the hero always looks full even on
+// browsers/devices that block YouTube autoplay. Replace the ID with a new
+// one if you re-cut the reel.
 // ===========================================================================
-const BUSINESS_YOUTUBE_HANDLE = '@sebcotravels';
-const BUSINESS_YOUTUBE_URL = `https://www.youtube.com/${BUSINESS_YOUTUBE_HANDLE}`;
 const FEATURED_VIDEO_ID = 'bvTEIDjiqbM';
 
 // Editorial hero image: a sleek dark exterior of a premium people carrier.
@@ -83,7 +82,11 @@ const CheckIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
 
 function useGlobalReveal(pathname: string) {
   useEffect(() => {
-    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) return;
+    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+      // No IO — make sure content is always visible.
+      document.querySelectorAll<HTMLElement>('.reveal').forEach((el) => el.classList.add('reveal-in'));
+      return;
+    }
     const targets = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
     if (targets.length === 0) return;
     const io = new IntersectionObserver(
@@ -98,7 +101,21 @@ function useGlobalReveal(pathname: string) {
       { rootMargin: '0px 0px -8% 0px', threshold: 0.05 }
     );
     targets.forEach((t) => io.observe(t));
-    return () => io.disconnect();
+    // Safety net 1: if an element never enters the viewport (very tall pages,
+    // full-page screenshots, headless crawlers), reveal it after 1.5 s.
+    const fallback1 = window.setTimeout(() => {
+      document.querySelectorAll<HTMLElement>('.reveal:not(.reveal-in)').forEach((el) => el.classList.add('reveal-in'));
+    }, 1500);
+    // Safety net 2: after 4 s, force-reveal any still-hidden element via
+    // the `reveal-force-in` class which uses !important to win any cascade.
+    const fallback2 = window.setTimeout(() => {
+      document.querySelectorAll<HTMLElement>('.reveal:not(.reveal-in)').forEach((el) => el.classList.add('reveal-force-in', 'reveal-in'));
+    }, 4000);
+    return () => {
+      io.disconnect();
+      window.clearTimeout(fallback1);
+      window.clearTimeout(fallback2);
+    };
   }, [pathname]);
 }
 
@@ -169,7 +186,7 @@ const App: React.FC = () => {
   useRouteMeta(null, { title: t.siteSeoTitle, description: t.siteSeoDescription });
 
   return (
-    <div className="flex flex-col min-h-screen pb-20 md:pb-0">
+    <div className="flex flex-col min-h-screen pb-24 md:pb-0">
       <Header
         t={t}
         language={language}
@@ -207,6 +224,7 @@ const App: React.FC = () => {
             <PopularRoutes t={t} navigate={navigate} />
             <Services t={t} />
             <WhyChooseUs t={t} />
+            <HowWeCalculate t={t} />
             <Testimonials t={t} />
             <Video t={t} />
             <Faq t={t} />
@@ -234,100 +252,224 @@ interface HeaderProps {
   scrollTo: (id: string) => void;
 }
 
-const Header: FC<HeaderProps> = ({ t, language, setLanguage, toggleTheme, theme, scrollTo }) => (
-  <header className="sticky top-0 z-40 bg-white/80 dark:bg-[#0B1F33]/85 backdrop-blur-md border-b border-black/5 dark:border-white/10">
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex items-center justify-between h-16">
-        <button onClick={() => scrollTo('top')} className="flex-shrink-0 text-left">
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-gray-900 dark:text-white">
-            SEBCO <span className="text-[#D4AF37]">Travels</span>
-          </h1>
-          <p className="hidden sm:block text-[10px] tracking-[0.2em] uppercase -mt-0.5 text-[#D4AF37]">
-            {t.tagline}
-          </p>
-        </button>
+// Top-level nav shown in the desktop header. The full list (including
+// routes / testimonials / faq) lives inside the mobile drawer below.
+const NAV_DESKTOP = (t: AppTranslations) => [
+  { id: 'book',     label: t.navBook,     accent: true  },
+  { id: 'fleet',    label: t.navFleet,    accent: false },
+  { id: 'services', label: t.navServices, accent: false },
+  { id: 'video',    label: t.navVideo,    accent: false },
+  { id: 'contact',  label: t.navContact,  accent: false },
+];
+const NAV_DRAWER = (t: AppTranslations) => [
+  { id: 'book',        label: t.navBook,     accent: true  },
+  { id: 'fleet',       label: t.navFleet,    accent: false },
+  { id: 'services',    label: t.navServices, accent: false },
+  { id: 'routes',      label: t.routesTitle, accent: false },
+  { id: 'video',       label: t.navVideo,    accent: false },
+  { id: 'testimonials',label: t.testTitle,   accent: false },
+  { id: 'faq',         label: t.faqTitle,    accent: false },
+  { id: 'contact',     label: t.navContact,  accent: false },
+];
 
-        <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
-          {[
-            { id: 'book', label: t.navBook, accent: true },
-            { id: 'fleet', label: t.navFleet },
-            { id: 'services', label: t.navServices },
-            { id: 'video', label: t.navVideo },
-            { id: 'contact', label: t.navContact },
-          ].map((item) => (
-            <button
-              key={item.id}
-              onClick={() => scrollTo(item.id)}
-              className={`text-sm font-semibold transition ${
-                item.accent
-                  ? 'text-[#D4AF37] hover:opacity-80'
-                  : 'text-gray-700 dark:text-gray-200 hover:text-[#D4AF37]'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
+const MenuIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+);
+const CloseIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <line x1="6" y1="6" x2="18" y2="18"/>
+    <line x1="18" y1="6" x2="6" y2="18"/>
+  </svg>
+);
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <a
-            href={BUSINESS_YOUTUBE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#FF0000]/10 text-[#FF0000] hover:bg-[#FF0000] hover:text-white transition"
-            aria-label="Watch us on YouTube"
-          >
-            <YouTubeIcon className="h-4 w-4" />
-          </a>
-          <a
-            href={BUSINESS_WHATSAPP_HREF}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center justify-center h-9 w-9 rounded-full bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition"
-            aria-label="Message us on WhatsApp"
-          >
-            <WhatsAppIcon className="h-4 w-4" />
-          </a>
-          <a
-            href={BUSINESS_PHONE_HREF}
-            className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-gray-800 dark:text-gray-100 hover:text-[#D4AF37] transition"
-            aria-label={`${t.navCall} ${BUSINESS_PHONE}`}
-          >
-            <PhoneIcon className="h-4 w-4 text-[#D4AF37]" />
-            <span className="hidden lg:inline">{BUSINESS_PHONE}</span>
-          </a>
-          <div className="relative">
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as Language)}
-              className="appearance-none bg-transparent border border-gray-300 dark:border-white/15 rounded-md py-1 pl-7 pr-6 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#D4AF37] cursor-pointer"
-              aria-label="Select language"
-            >
-              {LANGUAGES.map((l) => (
-                <option key={l.code} value={l.code} className="bg-white dark:bg-gray-800">
-                  {l.flag} {l.code.toUpperCase()}
-                </option>
-              ))}
-            </select>
-            <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-2 flex items-center text-sm">
-              {LANGUAGES.find((l) => l.code === language)?.flag}
-            </span>
-            <span className="pointer-events-none absolute inset-y-0 right-1 flex items-center text-gray-500">
-              <svg className="fill-current h-3 w-3" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-            </span>
-          </div>
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition"
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <SunIcon className="text-yellow-400" /> : <MoonIcon className="text-gray-800" />}
+const Header: FC<HeaderProps> = ({ t, language, setLanguage, toggleTheme, theme, scrollTo }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const close = () => setMenuOpen(false);
+
+  // Body scroll lock + close on Escape
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [menuOpen]);
+
+  return (
+    <header className="sticky top-0 z-40 bg-white/80 dark:bg-[#0B1F33]/85 backdrop-blur-md border-b border-black/5 dark:border-white/10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <button onClick={() => scrollTo('top')} className="flex-shrink-0 -ml-1 px-1 py-2 min-h-[44px] flex items-center" aria-label="Go to top">
+            <img
+              src="/logo.svg"
+              alt="Sebco Travels"
+              className="h-28 w-auto sm:h-32"
+              width={56}
+              height={56}
+            />
           </button>
+
+          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            {NAV_DESKTOP(t).map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollTo(item.id)}
+                className={`text-sm font-semibold transition min-h-[44px] px-1 ${
+                  item.accent
+                    ? 'text-[#D4AF37] hover:opacity-80'
+                    : 'text-gray-700 dark:text-gray-200 hover:text-[#D4AF37]'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-1 sm:gap-2">
+            <a
+              href={BUSINESS_WHATSAPP_HREF}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center justify-center h-10 w-10 min-h-[40px] min-w-[40px] rounded-full bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366] hover:text-white transition"
+              aria-label="Message us on WhatsApp"
+            >
+              <WhatsAppIcon className="h-4 w-4" />
+            </a>
+            <a
+              href={BUSINESS_PHONE_HREF}
+              className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-gray-800 dark:text-gray-100 hover:text-[#D4AF37] transition min-h-[40px] px-2"
+              aria-label={`${t.navCall} ${BUSINESS_PHONE}`}
+            >
+              <PhoneIcon className="h-4 w-4 text-[#D4AF37]" />
+              <span className="hidden lg:inline">{BUSINESS_PHONE}</span>
+            </a>
+            <div className="relative">
+              <select
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as Language)}
+                className="appearance-none bg-transparent border border-gray-300 dark:border-white/15 rounded-md h-10 min-h-[40px] pl-7 pr-7 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#D4AF37] cursor-pointer"
+                aria-label="Select language"
+              >
+                {LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code} className="bg-white dark:bg-gray-800">
+                    {l.code.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+              <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-2 flex items-center text-sm">
+                {LANGUAGES.find((l) => l.code === language)?.flag}
+              </span>
+              <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-500">
+                <svg className="fill-current h-3 w-3" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              </span>
+            </div>
+            <button
+              onClick={toggleTheme}
+              className="inline-flex items-center justify-center h-10 w-10 min-h-[40px] min-w-[40px] rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition"
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <SunIcon className="text-yellow-400" /> : <MoonIcon className="text-gray-800" />}
+            </button>
+            {/* Mobile hamburger — visible only on small screens */}
+            <button
+              onClick={() => setMenuOpen(true)}
+              className="md:hidden inline-flex items-center justify-center h-10 w-10 min-h-[40px] min-w-[40px] rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition"
+              aria-label="Open menu"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-drawer"
+            >
+              <MenuIcon className="h-6 w-6 text-gray-800 dark:text-gray-100" />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </header>
-);
+
+      {/* Mobile drawer — rendered as a sibling so the sticky header doesn't
+          contain an absolutely positioned overlay. */}
+      {menuOpen && (
+        <div className="md:hidden fixed inset-0 z-50" role="dialog" aria-modal="true" id="mobile-drawer">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-anim"
+            onClick={close}
+            aria-hidden="true"
+          />
+          <div className="absolute top-0 right-0 h-full w-[88%] max-w-sm bg-white dark:bg-[#0B1F33] shadow-2xl drawer-anim flex flex-col">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-black/10 dark:border-white/10 pt-safe-top">
+              <span className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-300">Menu</span>
+              <button
+                onClick={close}
+                className="inline-flex items-center justify-center h-10 w-10 min-h-[40px] min-w-[40px] rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition"
+                aria-label="Close menu"
+              >
+                <CloseIcon className="h-5 w-5 text-gray-800 dark:text-gray-100" />
+              </button>
+            </div>
+            <nav className="flex-1 overflow-y-auto px-2 py-4 scroll-touch">
+              <ul className="space-y-1">
+                {NAV_DRAWER(t).map((item) => (
+                  <li key={item.id}>
+                    <button
+                      onClick={() => { scrollTo(item.id); close(); }}
+                      className={`w-full text-left px-4 py-3 min-h-[44px] rounded-md text-base font-semibold transition ${
+                        item.accent
+                          ? 'bg-[#D4AF37]/10 text-[#D4AF37]'
+                          : 'text-gray-800 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/5 active:bg-gray-200 dark:active:bg-white/10'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <div className="px-4 py-4 border-t border-black/10 dark:border-white/10 space-y-3 pb-safe-bottom">
+              <div className="flex flex-wrap gap-2">
+                {LANGUAGES.map((l) => (
+                  <button
+                    key={l.code}
+                    onClick={() => setLanguage(l.code)}
+                    className={`inline-flex items-center justify-center gap-1.5 h-10 min-h-[40px] px-3 rounded-full text-sm font-semibold border transition ${
+                      l.code === language
+                        ? 'bg-[#D4AF37] text-[#1B3A57] border-[#D4AF37]'
+                        : 'border-black/15 dark:border-white/15 text-gray-800 dark:text-gray-100 hover:border-[#D4AF37]'
+                    }`}
+                    aria-pressed={l.code === language}
+                  >
+                    <span aria-hidden="true">{l.flag}</span> {l.code.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href={BUSINESS_PHONE_HREF}
+                  className="inline-flex items-center justify-center gap-2 h-11 min-h-[44px] rounded-md border border-[#D4AF37] text-[#D4AF37] text-sm font-bold"
+                >
+                  <PhoneIcon className="h-4 w-4" /> {t.navCall}
+                </a>
+                <a
+                  href={BUSINESS_WHATSAPP_HREF}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 h-11 min-h-[44px] rounded-md bg-[#25D366] text-white text-sm font-bold"
+                >
+                  <WhatsAppIcon className="h-4 w-4" /> WhatsApp
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </header>
+  );
+};
 
 // ---------------------------------------------------------------------------
 // Hero — premium dark full-bleed + booking widget overlay
@@ -341,18 +483,24 @@ interface HeroProps {
 
 const Hero: FC<HeroProps> = ({ t, apiBaseUrl, mapboxAccessToken }) => (
   <section id="top" className="relative isolate overflow-hidden bg-[#0B1F33]">
-    {/* Background: a center-cropped, lightly-tinted YouTube video acting as a watermark.
-        - YouTube UI (title bar, channel name, "More videos" panel) is cropped
-          out via the 1.5x scale + overflow:hidden.
-        - `pointer-events:none` so the video can never be clicked or focused.
-        - Light filter so the video stays clearly visible — like the
-          Addison Lee car-moving shot. Only a subtle 60% brightness +
-          90% saturation tint so it doesn't compete with the gold.
-        - A horizontal gradient (dark-left → clear-right) ensures the
-          text column is always readable, while the right half of the
-          hero shows the video through clearly. */}
+    {/* Background: a sharp, high-resolution still image of a black
+        executive MPV acting as the hero. Self-hosted from /img/ for
+        reliability — the same image is reused in the Fleet section. */}
     <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 scale-[1.5] origen-center">
+      <img
+        src="/img/spacetourer-hero.jpg"
+        alt="Black executive MPV used for chauffeur transfers"
+        aria-hidden="true"
+        loading="eager"
+        decoding="async"
+        fetchPriority="high"
+        className="absolute inset-0 w-full h-full object-cover object-center"
+        style={{ filter: 'brightness(0.95) saturate(1.05)' }}
+      />
+      {/* Video layer on top of the still — plays where the browser
+          allows autoplay (most desktop browsers). Sits above the still
+          but is cropped so YouTube's UI never shows. */}
+      <div className="absolute inset-0 scale-[1.5] origin-center">
         <iframe
           src={`https://www.youtube.com/embed/${FEATURED_VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${FEATURED_VIDEO_ID}&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1&fs=0&playsinline=1&iv_load_policy=3&disable_picture_in_picture&widget_referrer=${typeof window !== 'undefined' ? window.location.origin : ''}`}
           title=""
@@ -361,17 +509,17 @@ const Hero: FC<HeroProps> = ({ t, apiBaseUrl, mapboxAccessToken }) => (
           style={{
             border: 0,
             pointerEvents: 'none',
-            filter: 'brightness(0.6) saturate(0.9)',
+            filter: 'brightness(0.7) saturate(0.9)',
           }}
           allow="autoplay; encrypted-media; accelerometer; gyroscope; picture-in-picture"
         />
       </div>
-      {/* Horizontal gradient: dark on the left (text), clear on the right (video) */}
+      {/* Horizontal gradient: dark on the left (text), clear on the right (image) */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            'linear-gradient(90deg, rgba(11,31,51,0.88) 0%, rgba(11,31,51,0.72) 30%, rgba(11,31,51,0.30) 55%, rgba(11,31,51,0.10) 100%)',
+            'linear-gradient(90deg, rgba(11,31,51,0.88) 0%, rgba(11,31,51,0.65) 35%, rgba(11,31,51,0.30) 65%, rgba(11,31,51,0.10) 100%)',
         }}
       />
       {/* Subtle top fade for the eyebrow line + headline */}
@@ -383,10 +531,6 @@ const Hero: FC<HeroProps> = ({ t, apiBaseUrl, mapboxAccessToken }) => (
         }}
       />
     </div>
-      {/* Dark gradient overlay for text contrast — strong on top + bottom */}
-      <div className="absolute inset-0 bg-[#0B1F33]/75" />
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0B1F33]/70 via-[#0B1F33]/55 to-[#0B1F33]/90" />
-    </div>
 
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-28">
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
@@ -395,12 +539,11 @@ const Hero: FC<HeroProps> = ({ t, apiBaseUrl, mapboxAccessToken }) => (
           <p className="text-[11px] sm:text-xs uppercase tracking-[0.25em] font-bold text-[#D4AF37]">
             {t.heroEyebrow}
           </p>
-          <h2 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight">
-            {t.heroTitle}
-            <br />
+          <h2 className="mt-4 hero-title text-white">
+            {t.heroTitle}{' '}
             <span className="text-[#D4AF37]">{t.heroTitleAccent}</span>
           </h2>
-          <p className="mt-5 max-w-xl text-base sm:text-lg text-gray-200">
+          <p className="mt-5 max-w-xl hero-subtitle text-gray-200">
             {t.heroSubtitle}
           </p>
 
@@ -420,20 +563,7 @@ const Hero: FC<HeroProps> = ({ t, apiBaseUrl, mapboxAccessToken }) => (
             >
               <PhoneIcon className="h-4 w-4" /> {BUSINESS_PHONE}
             </a>
-            <span className="text-xs text-gray-300">24 / 7 dispatch · GB</span>
-            <a
-              href={`https://www.youtube.com/watch?v=${FEATURED_VIDEO_ID}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-[#D4AF37] transition"
-            >
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-current">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3 ml-0.5">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </span>
-              <span>Watch the full film</span>
-            </a>
+            <span className="text-xs text-gray-300">24 / 7 dispatch · GB · Pre-book only</span>
           </div>
         </div>
 
@@ -463,25 +593,25 @@ interface StickyMobileCtaProps {
 
 const StickyMobileCta: FC<StickyMobileCtaProps> = ({ t, scrollTo }) => (
   <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#0B1F33]/95 backdrop-blur border-t border-black/10 dark:border-white/10 mobile-cta-shadow">
-    <div className="grid grid-cols-3 gap-2 p-3 pb-[max(env(safe-area-inset-bottom,0px),0.75rem)]">
+    <div className="grid grid-cols-3 gap-2 p-2 pb-[max(env(safe-area-inset-bottom,0px),0.5rem)]">
       <a
         href={BUSINESS_WHATSAPP_HREF}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Message us on WhatsApp"
-        className="inline-flex items-center justify-center gap-1.5 rounded-md bg-[#25D366] text-white py-3 text-xs font-bold uppercase tracking-wider shadow-md"
+        className="inline-flex items-center justify-center gap-1.5 rounded-md bg-[#25D366] text-white min-h-[44px] py-2.5 px-2 text-sm font-bold shadow-md"
       >
         <WhatsAppIcon className="h-4 w-4" /> WhatsApp
       </a>
       <a
         href={BUSINESS_PHONE_HREF}
-        className="inline-flex items-center justify-center gap-1.5 rounded-md border border-[#D4AF37] text-[#D4AF37] py-3 text-xs font-bold uppercase tracking-wider"
+        className="inline-flex items-center justify-center gap-1.5 rounded-md border border-[#D4AF37] text-[#D4AF37] min-h-[44px] py-2.5 px-2 text-sm font-bold"
       >
         <PhoneIcon className="h-4 w-4" /> {t.stickyCall}
       </a>
       <button
         onClick={() => scrollTo('book')}
-        className="inline-flex items-center justify-center rounded-md bg-[#D4AF37] text-[#1B3A57] py-3 text-xs font-black uppercase tracking-wider shadow-lg"
+        className="inline-flex items-center justify-center rounded-md bg-[#D4AF37] text-[#1B3A57] min-h-[44px] py-2.5 px-2 text-sm font-black shadow-lg"
       >
         {t.stickyBook}
       </button>
@@ -679,6 +809,152 @@ const WhyChooseUs: FC<{ t: AppTranslations }> = ({ t }) => {
 };
 
 // ---------------------------------------------------------------------------
+// HowWeCalculate — transparent breakdown of the fare formula. This is the
+// trust-builder section: real customers want to see the math. Sits on a
+// light band between the dark WhyChooseUs grid and the gray Testimonials.
+// ---------------------------------------------------------------------------
+
+const CoinIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 3.5"/>
+    <path d="M12 16.5h.01"/>
+  </svg>
+);
+const SpeedoIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M3 12a9 9 0 1 1 18 0"/>
+    <path d="M12 12l4 -4"/>
+    <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+  </svg>
+);
+const PlugIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M9 2v6"/>
+    <path d="M15 2v6"/>
+    <path d="M6 8h12v3a6 6 0 0 1-12 0z"/>
+    <path d="M12 17v5"/>
+  </svg>
+);
+const PoundIcon: FC<SVGProps<SVGSVGElement>> = (props) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M17 4H9.5a3.5 3.5 0 0 0 0 7h2a3.5 3.5 0 0 1 0 7H6"/>
+    <path d="M6 18h12"/>
+    <path d="M9 4l-3 7h6"/>
+  </svg>
+);
+
+const HowWeCalculate: FC<{ t: AppTranslations }> = ({ t }) => {
+  const items: { Icon: FC<SVGProps<SVGSVGElement>>; num: string; title: string; desc: string }[] = [
+    { Icon: CoinIcon,    num: '01', title: t.calc1Title, desc: t.calc1Desc },
+    { Icon: SpeedoIcon,  num: '02', title: t.calc2Title, desc: t.calc2Desc },
+    { Icon: PoundIcon,   num: '03', title: t.calc3Title, desc: t.calc3Desc },
+    { Icon: PlugIcon,    num: '04', title: t.calc4Title, desc: t.calc4Desc },
+  ];
+  return (
+    <section id="pricing" className="py-20 sm:py-28 bg-gradient-to-b from-white to-gray-50 dark:from-[#0F2842] dark:to-[#0B1F33] text-gray-900 dark:text-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto reveal">
+          <p className="text-xs sm:text-sm font-bold uppercase tracking-[0.25em] text-[#D4AF37]">
+            {t.calcEyebrow}
+          </p>
+          <h2 className="mt-3 text-3xl sm:text-4xl font-black tracking-tight gold-underline">
+            {t.calcTitle}
+          </h2>
+          <p className="mt-6 text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+            {t.calcSubtitle}
+          </p>
+        </div>
+
+        {/* Formula card */}
+        <div className="mt-12 reveal max-w-4xl mx-auto rounded-2xl border border-[#D4AF37]/30 bg-white dark:bg-white/5 shadow-xl p-6 sm:p-8">
+          <p className="text-xs uppercase tracking-wider font-bold text-[#D4AF37]">
+            {t.calcFormulaLabel}
+          </p>
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-5 items-center gap-3 text-center font-mono text-sm sm:text-base">
+            <div className="rounded-md bg-gray-50 dark:bg-white/5 px-3 py-2.5">
+              <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-sans font-bold">Base</p>
+              <p className="mt-0.5 text-lg font-black text-gray-900 dark:text-white">£5</p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400 font-sans">van · £3 car</p>
+            </div>
+            <span className="text-2xl text-[#D4AF37] font-sans font-black">+</span>
+            <div className="rounded-md bg-gray-50 dark:bg-white/5 px-3 py-2.5">
+              <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-sans font-bold">Per mile</p>
+              <p className="mt-0.5 text-lg font-black text-gray-900 dark:text-white">£2.80</p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400 font-sans">van · £2.40 car</p>
+            </div>
+            <span className="text-2xl text-[#D4AF37] font-sans font-black">×</span>
+            <div className="rounded-md bg-gray-50 dark:bg-white/5 px-3 py-2.5">
+              <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-sans font-bold">Distance</p>
+              <p className="mt-0.5 text-lg font-black text-gray-900 dark:text-white">miles</p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400 font-sans">live Mapbox</p>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <span>+ optional add-ons:</span>
+            <span className="px-2 py-0.5 rounded bg-gray-100 dark:bg-white/5">child seat £2</span>
+            <span className="px-2 py-0.5 rounded bg-gray-100 dark:bg-white/5">heavy bag £1</span>
+            <span className="px-2 py-0.5 rounded bg-gray-100 dark:bg-white/5">no surge</span>
+            <span className="px-2 py-0.5 rounded bg-gray-100 dark:bg-white/5">no booking fee</span>
+          </div>
+        </div>
+
+        {/* 4 reasons cards */}
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map(({ Icon, num, title, desc }, i) => (
+            <div
+              key={title}
+              className="reveal rounded-xl border border-black/5 dark:border-white/10 bg-white dark:bg-white/5 p-6"
+              style={{ transitionDelay: `${i * 80}ms` }}
+            >
+              <div className="flex items-center gap-3">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-md bg-[#D4AF37]/10 text-[#D4AF37]">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span className="text-xs font-mono font-bold text-[#D4AF37]">{num}</span>
+              </div>
+              <h3 className="mt-4 text-base font-bold">{title}</h3>
+              <p className="mt-1.5 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Live example */}
+        <div className="mt-10 reveal rounded-2xl bg-[#0B1F33] text-white p-6 sm:p-8 max-w-4xl mx-auto shadow-2xl">
+          <p className="text-xs uppercase tracking-wider font-bold text-[#D4AF37]">
+            {t.calcExampleLabel}
+          </p>
+          <p className="mt-1 text-sm text-gray-300">
+            {t.calcExampleRoute}
+          </p>
+          <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Base</p>
+              <p className="mt-1 text-2xl font-black">£5.00</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">27 mi × £2.80</p>
+              <p className="mt-1 text-2xl font-black">£75.60</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Add-ons</p>
+              <p className="mt-1 text-2xl font-black">£0.00</p>
+            </div>
+            <div>
+              <p className="text-[10px] uppercase tracking-wider text-[#D4AF37] font-bold">Total</p>
+              <p className="mt-1 text-3xl font-black text-[#D4AF37]">£80.60</p>
+            </div>
+          </div>
+          <p className="mt-4 text-[11px] text-gray-400 text-center">
+            {t.calcExampleNote}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ---------------------------------------------------------------------------
 // Existing sections (Fleet, Services, Video, Contact, Footer) — kept as-is
 // for now. These get the same premium treatment in the next batch.
 // ---------------------------------------------------------------------------
@@ -686,30 +962,37 @@ const WhyChooseUs: FC<{ t: AppTranslations }> = ({ t }) => {
 const Fleet: FC<{ t: AppTranslations }> = ({ t }) => (
   <section id="fleet" className="py-20 sm:py-28">
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center">
+      <div className="text-center reveal">
         <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white gold-underline">
           {t.fleetTitle}
         </h2>
         <p className="mt-6 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">{t.fleetSubtitle}</p>
       </div>
-      <div className="mt-12 flex justify-center">
-        <div className="w-full max-w-md">
-          <FleetCard
-            // TODO: replace with /img/citroen-spacetourer.jpg — see docs/photography.md
-            image="https://images.unsplash.com/photo-1582453699396-3a8a2d103b41?q=80&w=2070&auto=format&fit=crop"
-            title={t.citroenTitle}
-            description={t.citroenDesc}
-          />
-        </div>
+      <div className="mt-12 grid gap-6 sm:grid-cols-2 max-w-4xl mx-auto">
+        <FleetCard
+          image="/img/saloon-card.jpg"
+          title={t.carTitle}
+          description={t.carDesc}
+          badge="4 seats · Executive saloon"
+        />
+        <FleetCard
+          image="/img/spacetourer-hero.jpg"
+          title={t.citroenTitle}
+          description={t.citroenDesc}
+          badge="8 seats · Executive MPV"
+        />
       </div>
     </div>
   </section>
 );
 
-const FleetCard: FC<{ image: string; title: string; description: string }> = ({ image, title, description }) => (
+const FleetCard: FC<{ image: string; title: string; description: string; badge: string }> = ({ image, title, description, badge }) => (
   <div className="bg-white dark:bg-white/5 rounded-lg shadow-lg overflow-hidden border border-black/5 dark:border-white/10 group">
-    <div className="aspect-video overflow-hidden">
-      <img src={image} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+    <div className="aspect-video overflow-hidden relative">
+      <img src={image} alt={title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#D4AF37]/95 text-[#0B1F33] text-[10px] font-bold uppercase tracking-wider shadow-md">
+        {badge}
+      </span>
     </div>
     <div className="p-6">
       <h3 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h3>
@@ -757,8 +1040,8 @@ const Video: FC<{ t: AppTranslations }> = ({ t }) => (
   <section id="video" className="py-12 sm:py-16 bg-[#0B1F33] text-white">
     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10 max-w-4xl mx-auto">
-        <span className="flex-shrink-0 inline-flex items-center justify-center h-16 w-16 rounded-full bg-[#FF0000] text-white">
-          <YouTubeIcon className="h-7 w-7" />
+        <span className="flex-shrink-0 inline-flex items-center justify-center h-16 w-16 rounded-full bg-[#D4AF37]/15 text-[#D4AF37]">
+          <StarIcon className="h-7 w-7" />
         </span>
         <div className="flex-1 text-center md:text-left">
           <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
@@ -767,12 +1050,11 @@ const Video: FC<{ t: AppTranslations }> = ({ t }) => (
           <p className="mt-2 text-sm sm:text-base text-gray-300">{t.videoSubtitle}</p>
         </div>
         <a
-          href={BUSINESS_YOUTUBE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-shrink-0 inline-flex items-center gap-2 rounded-md bg-[#FF0000] text-white px-6 py-3 text-sm font-bold uppercase tracking-wider hover:opacity-90 transition shadow-md"
+          href="#book"
+          onClick={(e) => { e.preventDefault(); document.getElementById('book')?.scrollIntoView({ behavior: 'smooth' }); }}
+          className="flex-shrink-0 inline-flex items-center gap-2 rounded-md bg-[#D4AF37] text-[#1B3A57] px-6 py-3 text-sm font-bold uppercase tracking-wider hover:opacity-90 transition shadow-md"
         >
-          <YouTubeIcon className="h-5 w-5" /> {t.videoSubscribeCta}
+          {t.navBook}
         </a>
       </div>
     </div>
@@ -967,10 +1249,14 @@ const Footer: FC<{ t: AppTranslations }> = ({ t }) => (
       <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
         {/* Brand + contact */}
         <div>
-          <h3 className="text-xl font-black text-white">
-            SEBCO <span className="text-[#D4AF37]">Travels</span>
-          </h3>
-          <p className="text-xs mt-1 tracking-[0.2em] uppercase text-[#D4AF37]">{t.tagline}</p>
+          <img
+            src="/logo.svg"
+            alt="Sebco Travels"
+            className="h-44 w-auto"
+            width={80}
+            height={80}
+          />
+          <p className="text-xs mt-3 tracking-[0.2em] uppercase text-[#D4AF37]">{t.tagline}</p>
           <div className="mt-5 space-y-2 text-sm">
             <a href={BUSINESS_PHONE_HREF} className="flex items-center gap-2 hover:text-[#D4AF37] transition">
               <PhoneIcon className="h-4 w-4 text-[#D4AF37]" /> {BUSINESS_PHONE}
@@ -982,14 +1268,6 @@ const Footer: FC<{ t: AppTranslations }> = ({ t }) => (
               className="flex items-center gap-2 hover:text-[#25D366] transition"
             >
               <WhatsAppIcon className="h-4 w-4 text-[#25D366]" /> WhatsApp
-            </a>
-            <a
-              href={BUSINESS_YOUTUBE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 hover:text-[#FF0000] transition"
-            >
-              <YouTubeIcon className="h-4 w-4 text-[#FF0000]" /> YouTube
             </a>
             <a href={`mailto:${BUSINESS_EMAIL}`} className="flex items-center gap-2 hover:text-[#D4AF37] transition">
               <svg className="h-4 w-4 text-[#D4AF37]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>

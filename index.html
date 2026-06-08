@@ -2,18 +2,18 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/logo-mark.svg" />
+    <link rel="mask-icon" href="/logo-mark.svg" color="#1E5BD6" />
+    <link rel="apple-touch-icon" href="/icon-192.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#1B3A57" />
+    <meta name="theme-color" content="#0B1F33" />
 
     <!-- PWA: manifest + iOS home-screen icons -->
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" type="image/svg+xml" href="/icon-192.svg" sizes="192x192" />
-    <link rel="apple-touch-icon" href="/icon-512.svg" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="SEBCO" />
-    <link rel="mask-icon" href="/icon-512.svg" color="#D4AF37" />
 
     <title>SEBCO Travels | Premium Family & Airport Van Transfers UK | Pre-Book From £4</title>
     <meta
@@ -41,54 +41,13 @@
     <meta name="twitter:description" content="Pre-book a chauffeur-driven people carrier in seconds. Fixed price, family-friendly, child seats included." />
     <meta name="twitter:image" content="https://sebcotravels.co.uk/og-image.jpg" />
 
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-      html { scroll-behavior: smooth; }
-      body {
-        font-family: 'Inter', 'Open Sans', sans-serif;
-        -webkit-font-smoothing: antialiased;
-      }
-      h1, h2, h3, h4, h5, h6 {
-        font-family: 'Montserrat', sans-serif;
-        letter-spacing: -0.02em;
-      }
-      /* Subtle scroll-in fade for sections */
-      @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(16px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease-out, transform 0.7s ease-out; }
-      .reveal-in { opacity: 1; transform: translateY(0); }
-      /* Premium shimmer for the gold CTA on first paint */
-      @keyframes goldShimmer {
-        0% { background-position: 0% 50%; }
-        100% { background-position: 200% 50%; }
-      }
-      /* Hide scrollbar but keep scroll for horizontal carousels */
-      .scrollbar-hide::-webkit-scrollbar { display: none; }
-      .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-      /* Hero gradient overlay */
-      .hero-overlay {
-        background: linear-gradient(180deg, rgba(15,23,42,0.55) 0%, rgba(15,23,42,0.85) 100%);
-      }
-      /* Gold underline accent */
-      .gold-underline::after {
-        content: '';
-        display: block;
-        width: 64px;
-        height: 3px;
-        background: #D4AF37;
-        margin: 12px auto 0;
-        border-radius: 2px;
-      }
-      /* Sticky mobile CTA shadow */
-      .mobile-cta-shadow {
-        box-shadow: 0 -8px 24px rgba(0,0,0,0.25);
-      }
-    </style>
+
+    <!-- Mark the page as JS-enabled before the bundle loads. Until this runs,
+         .reveal elements render at full opacity, so the page is never blank. -->
+    <script>document.documentElement.classList.add('js-reveal');</script>
 
   <script type="importmap">
 {
@@ -100,7 +59,6 @@
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 
     <!-- Structured data: LocalBusiness + Service.
          Update the address, geo, telephone, and aggregateRating with real values. -->
@@ -143,9 +101,6 @@
           "seatingCapacity": 8,
           "fuelType": "Diesel"
         }
-      ],
-      "sameAs": [
-        "https://www.youtube.com/@sebcotravels"
       ]
     }
     </script>
@@ -170,7 +125,7 @@
     }
     </script>
 </head>
-  <body class="bg-white dark:bg-[#0B1F33] text-gray-800 dark:text-gray-100 transition-colors duration-500">
+  <body class="bg-white dark:bg-[#0B1F33] text-gray-800 dark:text-gray-100 antialiased">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

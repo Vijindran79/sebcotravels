@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   iOS zoom protection: iOS Safari zooms the page when an input/select/
+   textarea receives focus and its computed font-size is < 16px. We force
+   16px on every form element so the user never gets an unwanted zoom.
+   ========================================================================== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Reserve space for the sticky header on anchor jumps */
+    scroll-padding-top: 5rem;
+    /* Stop iOS Safari from animating text size on rotate */
+    -webkit-text-size-adjust: 100%;
+    /* Prevent overscroll glow on Chrome/Android */
+    overscroll-behavior-y: contain;
+  }
+  body {
+    font-family: 'Inter', 'Open Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    /* Tap flash removal on Android */
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  /* Force 16px on every form control. iOS will then NOT zoom on focus. */
+  input, select, textarea, button {
+    font-size: 16px;
+  }
+  /* Improve default form rendering on Safari */
+  input, textarea, select {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  /* Better touch scrolling inside the Mapbox suggestion dropdown */
+  .scroll-touch { -webkit-overflow-scrolling: touch; }
+}
+
+/* ==========================================================================
+   Scroll-reveal. Pair with the .reveal className and the JS observer
+   in App.tsx. The .reveal-in class is added when the element enters
+   the viewport. We also auto-reveal after 600ms for users with JS that
+   runs slowly, and skip the animation for prefers-reduced-motion.
+
+   CRITICAL: the default state is opacity:1 so the page is never blank.
+   We only apply the "hidden until JS observer fires" state when the
+   <html> element has the .js-reveal class, which App.tsx adds in a
+   <script> tag before the bundle loads. That way:
+   - With JS, you get the smooth fade-up animation
+   - Without JS (or before the bundle runs), content is fully visible
+   ========================================================================== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.js-reveal .reveal {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.js-reveal .reveal.reveal-in { opacity: 1; transform: translateY(0); }
+/* Safety net: even with JS, force-reveal anything still hidden after 2s. */
+.js-reveal .reveal-force-in { opacity: 1 !important; transform: none !important; }
+/* Auto-fallback so content is never invisible (e.g. JS disabled). */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  * { animation: none !important; transition: none !important; }
+}
+
+/* ==========================================================================
+   Premium micro-interactions
+   ========================================================================== */
+@keyframes goldShimmer {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* Hide scrollbar but keep scroll for horizontal carousels */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Hero gradient overlay */
+.hero-overlay {
+  background: linear-gradient(180deg, rgba(15,23,42,0.55) 0%, rgba(15,23,42,0.85) 100%);
+}
+
+/* Gold underline accent */
+.gold-underline::after {
+  content: '';
+  display: block;
+  width: 64px;
+  height: 3px;
+  background: #D4AF37;
+  margin: 12px auto 0;
+  border-radius: 2px;
+}
+
+/* Sticky mobile CTA shadow */
+.mobile-cta-shadow {
+  box-shadow: 0 -8px 24px rgba(0,0,0,0.25);
+}
+
+/* ==========================================================================
+   Safe-area helpers — for notched / Dynamic-Island iPhones and Android
+   gesture navigation bars. Use pt-safe-top / pb-safe-bottom on elements
+   that need to clear the notch / home indicator.
+   ========================================================================== */
+.pt-safe-top    { padding-top:    env(safe-area-inset-top); }
+.pb-safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.pl-safe-left   { padding-left:   env(safe-area-inset-left); }
+.pr-safe-right  { padding-right:  env(safe-area-inset-right); }
+.mb-safe-bottom { margin-bottom:  env(safe-area-inset-bottom); }
+.mt-safe-top    { margin-top:     env(safe-area-inset-top); }
+
+/* ==========================================================================
+   Mobile menu drawer — animates in from the right on small screens
+   ========================================================================== */
+@keyframes drawerIn {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes backdropIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.drawer-anim  { animation: drawerIn 0.25s ease-out forwards; }
+.backdrop-anim { animation: backdropIn 0.25s ease-out forwards; }
+
+/* ==========================================================================
+   Hero typography clamp — guaranteed readable on 320px screens and below
+   ========================================================================== */
+.hero-title {
+  font-size: clamp(1.875rem, 7.5vw, 2.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 900;
+}
+@media (min-width: 640px)  { .hero-title { font-size: clamp(2.5rem, 6vw, 3.25rem); } }
+@media (min-width: 1024px) { .hero-title { font-size: clamp(3rem, 5vw, 3.75rem); } }
+
+.hero-subtitle {
+  font-size: clamp(0.875rem, 3.2vw, 1rem);
+  line-height: 1.55;
+}
+@media (min-width: 640px) { .hero-subtitle { font-size: 1.0625rem; } }
+
+.section-title {
+  font-size: clamp(1.5rem, 5.5vw, 2.25rem);
+  line-height: 1.1;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}

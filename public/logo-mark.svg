@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Sebco Travels">
+  <defs>
+    <linearGradient id="mkSwoosh" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#0F2A8A"/>
+      <stop offset="40%"  stop-color="#1E5BD6"/>
+      <stop offset="70%"  stop-color="#28B8D6"/>
+      <stop offset="100%" stop-color="#7FE5EE"/>
+    </linearGradient>
+    <linearGradient id="mkCaseBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#1734A0"/>
+      <stop offset="100%" stop-color="#0F2578"/>
+    </linearGradient>
+    <linearGradient id="mkCaseSide" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#28B8D6"/>
+      <stop offset="100%" stop-color="#1E8FB5"/>
+    </linearGradient>
+    <linearGradient id="mkWord" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#1E2A8A"/>
+      <stop offset="50%"  stop-color="#7A3AC8"/>
+      <stop offset="100%" stop-color="#F2784B"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Tile background (white tile so the gradient pop) -->
+  <rect width="512" height="512" rx="96" ry="96" fill="#FFFFFF"/>
+
+  <!-- Swoosh -->
+  <g transform="translate(40, 40)">
+    <path d="M 320 80
+             C 320 30, 250 0, 180 15
+             C 90 35, 35 100, 30 200
+             C 25 300, 85 390, 180 420
+             C 250 445, 320 420, 325 380
+             C 328 350, 305 330, 280 335
+             C 235 343, 215 365, 175 365
+             C 130 365, 105 333, 105 280
+             C 105 225, 140 188, 195 175
+             C 235 168, 270 175, 280 150
+             C 290 125, 285 100, 320 80 Z"
+          fill="url(#mkSwoosh)"/>
+  </g>
+
+  <!-- Airplane -->
+  <g transform="translate(260, 130) rotate(-12)">
+    <path d="M 0 28 L 110 21 C 122 21, 128 26, 128 32 C 128 38, 122 43, 110 43 L 0 35 Z"
+          fill="#28B8D6"/>
+    <path d="M 0 28 L -18 4 L 4 0 L 16 20 Z" fill="#28B8D6"/>
+    <path d="M 42 26 L 70 10 L 80 14 L 50 30 Z" fill="#1E8FB5"/>
+    <path d="M 46 35 L 76 47 L 68 50 L 46 38 Z" fill="#1E8FB5"/>
+  </g>
+
+  <!-- Suitcase -->
+  <g transform="translate(290, 220)">
+    <path d="M 25 6 C 25 -6, 60 -6, 60 6" fill="none" stroke="#0F2578" stroke-width="8" stroke-linecap="round"/>
+    <rect x="0" y="12" width="85" height="85" rx="8" ry="8" fill="url(#mkCaseBody)"/>
+    <rect x="60" y="12" width="25" height="85" fill="url(#mkCaseSide)"/>
+  </g>
+
+  <!-- Small "Sebco" wordmark below the icon -->
+  <text x="256" y="465"
+        text-anchor="middle"
+        font-family="'Brush Script MT', 'Lucida Handwriting', 'Segoe Script', cursive"
+        font-size="78"
+        font-weight="700"
+        font-style="italic"
+        fill="url(#mkWord)">Sebco Travels</text>
+</svg>

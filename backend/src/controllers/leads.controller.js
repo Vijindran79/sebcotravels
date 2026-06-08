@@ -21,6 +21,7 @@ export const createLeadSchema = z
       email: z.string().email().max(200),
       phone: z.string().min(6).max(40),
     }),
+    vehicleType: z.enum(['car', 'van']).default('van'),
     pickup: placeSchema,
     dropoff: placeSchema,
     passengers: z
@@ -83,6 +84,7 @@ export async function createLead(req, res) {
         dropoff: { lat: body.dropoff.lat, lng: body.dropoff.lng },
         childSeats: body.childSeats,
         luggage: body.luggage,
+        vehicleType: body.vehicleType,
       });
       distanceMeters = matrix.distanceMeters;
       durationSeconds = matrix.durationSeconds;
@@ -95,6 +97,7 @@ export async function createLead(req, res) {
 
   const lead = await Lead.create({
     contact: body.contact,
+    vehicleType: body.vehicleType,
     pickup: body.pickup,
     dropoff: body.dropoff,
     passengers: body.passengers,
@@ -115,6 +118,7 @@ export async function createLead(req, res) {
   const leadForEmail = {
     refId: lead._id.toString().slice(-6).toUpperCase(),
     contact: body.contact,
+    vehicleType: body.vehicleType,
     pickup: body.pickup,
     dropoff: body.dropoff,
     passengers: body.passengers,

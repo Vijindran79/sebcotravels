@@ -418,14 +418,13 @@ const RoutePage: FC<RoutePageProps> = ({
               <p className="text-[11px] sm:text-xs uppercase tracking-[0.25em] font-bold text-[#D4AF37]">
                 {t.heroEyebrow}
               </p>
-              <h1 className="mt-4 text-3xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight">
+              <h1 className="mt-4 hero-title text-white">
                 {route.fromName} <span className="text-[#D4AF37]">{t.heroConnector}</span> {route.toName}
-                <br />
-                <span className="text-gray-300 text-2xl sm:text-3xl lg:text-4xl font-bold">
-                  {t.heroSuffix}
-                </span>
               </h1>
-              <p className="mt-5 max-w-xl text-base sm:text-lg text-gray-200">
+              <p className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-200">
+                {t.heroSuffix}
+              </p>
+              <p className="mt-5 max-w-xl hero-subtitle text-gray-200">
                 {t.heroSubtitle}
               </p>
 

@@ -17,11 +17,19 @@ export interface BookingTranslations {
   // Heading
   widgetTitle: string;
   widgetSubtitle: string;
+  // Vehicle type
+  vehicleTitle: string;
+  vehicleCarLabel: string;
+  vehicleCarDesc: string;
+  vehicleVanLabel: string;
+  vehicleVanDesc: string;
   // Inputs
   pickupLabel: string;
   pickupPlaceholder: string;
+  pickupHint: string;
   dropoffLabel: string;
   dropoffPlaceholder: string;
+  dropoffHint: string;
   scheduledAtLabel: string;
   scheduledHelp: string;
   passengersTitle: string;
@@ -134,6 +142,12 @@ const CURRENCY_SYMBOL: Record<string, string> = {
   pln: 'zł',
 };
 
+// Matches a full UK postcode with the space: "RG1 1AA", "SW1A 1AA", "M11AA"
+const UK_POSTCODE_FULL = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
+function isFullUkPostcode(s: string): boolean {
+  return UK_POSTCODE_FULL.test(s.trim());
+}
+
 const initialPlace: PlaceValue = { address: '', lat: null, lng: null };
 
 function formatFare(fare: FareSnapshot): string {
@@ -197,6 +211,7 @@ interface PlaceInputProps {
   id: string;
   label: string;
   placeholder: string;
+  hint?: string;
   value: PlaceValue;
   onChange: (v: PlaceValue) => void;
   mapboxAccessToken: string;
@@ -204,7 +219,7 @@ interface PlaceInputProps {
   icon?: React.ReactNode;
 }
 
-const PlaceInput: FC<PlaceInputProps> = ({ id, label, placeholder, value, onChange, mapboxAccessToken, sessionToken, icon }) => {
+const PlaceInput: FC<PlaceInputProps> = ({ id, label, placeholder, hint, value, onChange, mapboxAccessToken, sessionToken, icon }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [suggestions, setSuggestions] = useState<MapboxSuggestion[]>([]);
@@ -223,18 +238,46 @@ const PlaceInput: FC<PlaceInputProps> = ({ id, label, placeholder, value, onChan
     debounceRef.current = window.setTimeout(async () => {
       setLoading(true);
       try {
+        // UK postcodes (e.g. "RG1 1AA", "SW1A 1AA") get the cleanest results
+        // when we ask for `address` first (full PAF door numbers), then
+        // `postcode`, then `place`. Limit 10 so users see a real list.
         const params = new URLSearchParams({
           q,
           session_token: sessionToken,
           access_token: mapboxAccessToken,
           country: 'gb',
           language: 'en',
-          types: 'address,poi,postcode,locality,place,district',
-          limit: '6',
+          types: 'address,postcode,place,locality,street,district',
+          limit: '10',
         });
         const res = await fetch(`${SEARCHBOX_SUGGEST}?${params.toString()}`);
         const data = await res.json();
-        const list = Array.isArray(data?.suggestions) ? data.suggestions : [];
+        let list: MapboxSuggestion[] = Array.isArray(data?.suggestions) ? data.suggestions : [];
+        // If the user typed a full UK postcode (with the space), do a second
+        // call asking for every address under that postcode — this is the
+        // "door number list" the user asked for.
+        if (isFullUkPostcode(q.trim())) {
+          const expand = new URLSearchParams({
+            q,
+            session_token: sessionToken,
+            access_token: mapboxAccessToken,
+            country: 'gb',
+            language: 'en',
+            types: 'address',
+            limit: '10',
+          });
+          const res2 = await fetch(`${SEARCHBOX_SUGGEST}?${expand.toString()}`);
+          const data2 = await res2.json();
+          const addresses = Array.isArray(data2?.suggestions) ? data2.suggestions : [];
+          // De-dupe by mapbox_id, addresses first
+          const seen = new Set<string>();
+          list = [...addresses, ...list].filter((s) => {
+            const k = s.mapbox_id || s.name;
+            if (seen.has(k)) return false;
+            seen.add(k);
+            return true;
+          });
+        }
         setSuggestions(list);
         setOpen(list.length > 0);
         setActiveIndex(-1);
@@ -243,7 +286,7 @@ const PlaceInput: FC<PlaceInputProps> = ({ id, label, placeholder, value, onChan
       } finally {
         setLoading(false);
       }
-    }, 280);
+    }, 220);
   }
 
   async function selectSuggestion(s: MapboxSuggestion) {
@@ -324,8 +367,11 @@ const PlaceInput: FC<PlaceInputProps> = ({ id, label, placeholder, value, onChan
               setOpen(false);
             }
           }}
-          className={`w-full rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 ${icon ? 'pl-10' : 'pl-3'} pr-9 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent`}
+          className={`w-full rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 ${icon ? 'pl-10' : 'pl-3'} pr-9 py-3 text-base text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] focus:border-transparent`}
         />
+        {hint && !value.address && (
+          <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400">{hint}</p>
+        )}
         {loading && (
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#D4AF37]" aria-hidden="true">
             <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -347,7 +393,7 @@ const PlaceInput: FC<PlaceInputProps> = ({ id, label, placeholder, value, onChan
               aria-selected={i === activeIndex}
               onMouseDown={(e) => { e.preventDefault(); selectSuggestion(s); }}
               onMouseEnter={() => setActiveIndex(i)}
-              className={`px-3 py-2 cursor-pointer text-sm border-b last:border-b-0 border-gray-100 dark:border-white/5 ${
+              className={`px-3 min-h-[44px] flex items-center cursor-pointer text-sm border-b last:border-b-0 border-gray-100 dark:border-white/5 ${
                 i === activeIndex
                   ? 'bg-[#D4AF37]/15 text-gray-900 dark:text-white'
                   : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5'
@@ -393,7 +439,7 @@ const NumberField: FC<NumberFieldProps> = ({ id, label, value, min = 0, max = 12
           aria-label="Decrease"
           onClick={() => onChange(clamp(value - 1))}
           disabled={value <= min}
-          className="px-3 py-2 text-gray-600 dark:text-gray-300 disabled:opacity-30"
+          className="px-3 min-h-[44px] min-w-[44px] text-lg text-gray-600 dark:text-gray-300 disabled:opacity-30"
         >
           &minus;
         </button>
@@ -407,14 +453,14 @@ const NumberField: FC<NumberFieldProps> = ({ id, label, value, min = 0, max = 12
             const n = parseInt(e.target.value, 10);
             if (Number.isFinite(n)) onChange(clamp(n));
           }}
-          className="w-full bg-transparent text-center text-sm font-semibold text-gray-900 dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="w-full min-w-0 min-h-[44px] bg-transparent text-center text-base font-semibold text-gray-900 dark:text-white focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
         <button
           type="button"
           aria-label="Increase"
           onClick={() => onChange(clamp(value + 1))}
           disabled={value >= max}
-          className="px-3 py-2 text-gray-600 dark:text-gray-300 disabled:opacity-30"
+          className="px-3 min-h-[44px] min-w-[44px] text-lg text-gray-600 dark:text-gray-300 disabled:opacity-30"
         >
           +
         </button>
@@ -458,11 +504,34 @@ const FlagIcon: FC = () => (
   </svg>
 );
 
+// Inline car + van icons used in the vehicle-type toggle. They take a
+// boolean `active` so the unselected tile is muted, the selected tile
+// is the brand gold.
+const CarIcon: FC<{ active: boolean }> = ({ active }) => (
+  <svg width="32" height="20" viewBox="0 0 64 40" fill="none" stroke={active ? '#D4AF37' : 'currentColor'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+    <path d="M6 26 L10 14 a4 4 0 0 1 4-3 H44 a4 4 0 0 1 4 3 L54 26 V32 a2 2 0 0 1-2 2 H8 a2 2 0 0 1-2-2 Z"/>
+    <path d="M14 11 L18 4 H38 L42 11"/>
+    <circle cx="16" cy="32" r="3" fill="currentColor" stroke="none" opacity="0.85"/>
+    <circle cx="46" cy="32" r="3" fill="currentColor" stroke="none" opacity="0.85"/>
+  </svg>
+);
+const VanIcon: FC<{ active: boolean }> = ({ active }) => (
+  <svg width="32" height="20" viewBox="0 0 64 40" fill="none" stroke={active ? '#D4AF37' : 'currentColor'} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+    <path d="M4 30 V14 a4 4 0 0 1 4-4 H36 V30 H4Z"/>
+    <path d="M36 18 H52 a4 4 0 0 1 4 4 V30 H36"/>
+    <path d="M36 10 V20"/>
+    <path d="M36 18 H44"/>
+    <circle cx="14" cy="32" r="3" fill="currentColor" stroke="none" opacity="0.85"/>
+    <circle cx="50" cy="32" r="3" fill="currentColor" stroke="none" opacity="0.85"/>
+  </svg>
+);
+
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
 const BookingForm: FC<BookingFormProps> = ({ t, apiBaseUrl, mapboxAccessToken, variant = 'standalone', contactPhone, initialPickup, initialDropoff }) => {
+  const [vehicleType, setVehicleType] = useState<'car' | 'van'>('van');
   const [pickup, setPickup] = useState<PlaceValue>(initialPickup ?? initialPlace);
   const [dropoff, setDropoff] = useState<PlaceValue>(initialDropoff ?? initialPlace);
   const [scheduledAt, setScheduledAt] = useState<string>(() => defaultScheduledAt());
@@ -628,6 +697,7 @@ const BookingForm: FC<BookingFormProps> = ({ t, apiBaseUrl, mapboxAccessToken, v
         email: contactEmail.trim(),
         phone: contactPhoneInput.trim(),
       },
+      vehicleType, // 'car' (Executive sedan) or 'van' (8-seater MPV)
       pickup: {
         address: pickup.address.trim(),
         ...(pickup.lat !== null && pickup.lng !== null ? { lat: pickup.lat, lng: pickup.lng } : {}),
@@ -793,6 +863,7 @@ const BookingForm: FC<BookingFormProps> = ({ t, apiBaseUrl, mapboxAccessToken, v
           id="pickup"
           label={t.pickupLabel}
           placeholder={t.pickupPlaceholder}
+          hint={t.pickupHint}
           value={pickup}
           onChange={setPickup}
           mapboxAccessToken={mapboxAccessToken}
@@ -803,12 +874,61 @@ const BookingForm: FC<BookingFormProps> = ({ t, apiBaseUrl, mapboxAccessToken, v
           id="dropoff"
           label={t.dropoffLabel}
           placeholder={t.dropoffPlaceholder}
+          hint={t.dropoffHint}
           value={dropoff}
           onChange={setDropoff}
           mapboxAccessToken={mapboxAccessToken}
           sessionToken={sessionToken}
           icon={<FlagIcon />}
         />
+
+        {/* Vehicle type — Car or Van. Drives both the capacity caps below
+            and the fare formula on the server. Default to Van (the hero). */}
+        <div>
+          <p className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+            {t.vehicleTitle}
+          </p>
+          <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label={t.vehicleTitle}>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={vehicleType === 'car'}
+              onClick={() => setVehicleType('car')}
+              className={`flex items-center justify-between gap-2 rounded-md border px-3 py-2.5 min-h-[44px] text-left transition ${
+                vehicleType === 'car'
+                  ? 'border-[#D4AF37] bg-[#D4AF37]/10 ring-1 ring-[#D4AF37]'
+                  : 'border-gray-300 dark:border-white/15 hover:border-[#D4AF37]/50'
+              }`}
+            >
+              <span className="flex flex-col">
+                <span className={`text-sm font-bold ${vehicleType === 'car' ? 'text-[#0B1F33] dark:text-white' : 'text-gray-800 dark:text-gray-200'}`}>
+                  {t.vehicleCarLabel}
+                </span>
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">{t.vehicleCarDesc}</span>
+              </span>
+              <CarIcon active={vehicleType === 'car'} />
+            </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={vehicleType === 'van'}
+              onClick={() => setVehicleType('van')}
+              className={`flex items-center justify-between gap-2 rounded-md border px-3 py-2.5 min-h-[44px] text-left transition ${
+                vehicleType === 'van'
+                  ? 'border-[#D4AF37] bg-[#D4AF37]/10 ring-1 ring-[#D4AF37]'
+                  : 'border-gray-300 dark:border-white/15 hover:border-[#D4AF37]/50'
+              }`}
+            >
+              <span className="flex flex-col">
+                <span className={`text-sm font-bold ${vehicleType === 'van' ? 'text-[#0B1F33] dark:text-white' : 'text-gray-800 dark:text-gray-200'}`}>
+                  {t.vehicleVanLabel}
+                </span>
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">{t.vehicleVanDesc}</span>
+              </span>
+              <VanIcon active={vehicleType === 'van'} />
+            </button>
+          </div>
+        </div>
 
         <div>
           <label htmlFor="scheduledAt" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
@@ -820,7 +940,7 @@ const BookingForm: FC<BookingFormProps> = ({ t, apiBaseUrl, mapboxAccessToken, v
             min={minScheduledAt}
             value={scheduledAt}
             onChange={(e) => setScheduledAt(e.target.value)}
-            className="w-full rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] [color-scheme:dark]"
+            className="w-full min-h-[44px] rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-3 text-base text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] [color-scheme:dark]"
           />
           <p className={`mt-1 text-[11px] ${scheduledTooSoon ? 'text-red-400' : 'text-gray-500 dark:text-gray-400'}`}>
             {scheduledTooSoon ? t.errorMinLeadTime : t.scheduledHelp}
@@ -828,10 +948,10 @@ const BookingForm: FC<BookingFormProps> = ({ t, apiBaseUrl, mapboxAccessToken, v
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <NumberField id="adults" label={t.adultsLabel} value={adults} min={1} max={8} onChange={setAdults} />
-          <NumberField id="children" label={t.childrenLabel} value={children} min={0} max={8} onChange={setChildren} />
-          <NumberField id="luggage-std" label={t.luggageStandardLabel} value={luggageStandard} min={0} max={10} onChange={setLuggageStandard} />
-          <NumberField id="luggage-hvy" label={t.luggageHeavyLabel} value={luggageHeavy} min={0} max={10} onChange={setLuggageHeavy} />
+          <NumberField id="adults" label={t.adultsLabel} value={adults} min={1} max={vehicleType === 'car' ? 4 : 8} onChange={setAdults} />
+          <NumberField id="children" label={t.childrenLabel} value={children} min={0} max={vehicleType === 'car' ? 4 : 8} onChange={setChildren} />
+          <NumberField id="luggage-std" label={t.luggageStandardLabel} value={luggageStandard} min={0} max={vehicleType === 'car' ? 4 : 10} onChange={setLuggageStandard} />
+          <NumberField id="luggage-hvy" label={t.luggageHeavyLabel} value={luggageHeavy} min={0} max={vehicleType === 'car' ? 4 : 10} onChange={setLuggageHeavy} />
         </div>
 
         {children > 0 && (
@@ -854,7 +974,7 @@ const BookingForm: FC<BookingFormProps> = ({ t, apiBaseUrl, mapboxAccessToken, v
         <button
           type="button"
           onClick={() => setAdvanced((v) => !v)}
-          className="w-full inline-flex items-center justify-between rounded-md border border-dashed border-gray-300 dark:border-white/15 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 hover:border-[#D4AF37] hover:text-[#D4AF37] transition"
+          className="w-full inline-flex items-center justify-between rounded-md border border-dashed border-gray-300 dark:border-white/15 px-3 min-h-[44px] py-2.5 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 hover:border-[#D4AF37] hover:text-[#D4AF37] transition"
           aria-expanded={advanced}
         >
           <span>{advanced ? '\u2212' : '+'} {t.contactTitle}</span>
@@ -865,22 +985,22 @@ const BookingForm: FC<BookingFormProps> = ({ t, apiBaseUrl, mapboxAccessToken, v
             <div>
               <label htmlFor="c-name" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">{t.contactName}</label>
               <input id="c-name" type="text" autoComplete="name" value={contactName} onChange={(e) => setContactName(e.target.value)}
-                className="w-full rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]" />
+                className="w-full min-h-[44px] rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2.5 text-base text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]" />
             </div>
             <div>
               <label htmlFor="c-email" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">{t.contactEmail}</label>
               <input id="c-email" type="email" autoComplete="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)}
-                className="w-full rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]" />
+                className="w-full min-h-[44px] rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2.5 text-base text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]" />
             </div>
             <div>
               <label htmlFor="c-phone" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">{t.contactPhone}</label>
               <input id="c-phone" type="tel" autoComplete="tel" value={contactPhoneInput} onChange={(e) => setContactPhoneInput(e.target.value)}
-                className="w-full rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]" />
+                className="w-full min-h-[44px] rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2.5 text-base text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]" />
             </div>
             <div className="sm:col-span-3">
               <label htmlFor="notes" className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">{t.notesLabel}</label>
               <textarea id="notes" rows={2} maxLength={1000} placeholder={t.notesPlaceholder} value={notes} onChange={(e) => setNotes(e.target.value)}
-                className="w-full rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]" />
+                className="w-full min-h-[44px] rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2.5 text-base text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]" />
             </div>
           </div>
         )}

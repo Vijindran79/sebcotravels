@@ -30,8 +30,19 @@ const schema = z.object({
   BREVO_OPERATOR_PHONE: z.string().optional(),
   BREVO_SITE_ORIGIN: z.string().url().default('http://localhost:3000'),
 
+  // Per-vehicle pricing. Car is a smaller sedan (4 pax, cheaper to run),
+  // van is the 8-seat MPV. Tuned to sit BELOW Addison Lee + Uber Black on
+  // the same distance while still giving the operator a healthy margin.
+  FARE_BASE_CAR:  z.coerce.number().nonnegative().default(3.00),
+  FARE_PER_MILE_CAR: z.coerce.number().nonnegative().default(2.40),
+  FARE_BASE_VAN:  z.coerce.number().nonnegative().default(5.00),
+  FARE_PER_MILE_VAN: z.coerce.number().nonnegative().default(2.80),
+
+  // Legacy single-class vars — kept so the /pricing endpoint still
+  // returns sane numbers if you forget to set the per-vehicle ones.
   FARE_BASE: z.coerce.number().nonnegative().default(4),
   FARE_PER_MILE: z.coerce.number().nonnegative().default(2.2),
+
   FARE_CURRENCY: z.string().toLowerCase().default("gbp"),
   FARE_ADDON_INFANT_SEAT: z.coerce.number().nonnegative().default(2),
   FARE_ADDON_TODDLER_SEAT: z.coerce.number().nonnegative().default(2),

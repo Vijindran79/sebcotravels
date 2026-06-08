@@ -1,11 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#0B1F33"/>
-  <g transform="translate(96 96) scale(13.33)">
-    <path d="M0 12 L10 0 H13 a2 2 0 0 1 2 2 V14 a2 2 0 0 1-2 2 H3 a2 2 0 0 1-2-2 V12 z" fill="#D4AF37"/>
-    <rect x="2.5" y="6" width="10" height="6" rx="0.5" fill="#0B1F33"/>
-    <circle cx="4.5" cy="13.5" r="1.2" fill="#0B1F33"/>
-    <circle cx="10.5" cy="13.5" r="1.2" fill="#0B1F33"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Sebco Travels">
+  <defs>
+    <linearGradient id="ic5Swoosh" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#0F2A8A"/>
+      <stop offset="40%"  stop-color="#1E5BD6"/>
+      <stop offset="70%"  stop-color="#28B8D6"/>
+      <stop offset="100%" stop-color="#7FE5EE"/>
+    </linearGradient>
+    <linearGradient id="ic5CaseBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#1734A0"/>
+      <stop offset="100%" stop-color="#0F2578"/>
+    </linearGradient>
+    <linearGradient id="ic5CaseSide" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#28B8D6"/>
+      <stop offset="100%" stop-color="#1E8FB5"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" ry="96" fill="#FFFFFF"/>
+  <g transform="translate(50, 50)">
+    <path d="M 320 75
+             C 320 32, 252 0, 185 16
+             C 92 37, 36 100, 32 200
+             C 28 300, 86 390, 185 420
+             C 252 445, 320 420, 326 378
+             C 330 348, 308 328, 286 333
+             C 240 340, 220 365, 180 365
+             C 138 365, 110 333, 110 280
+             C 110 228, 146 188, 200 178
+             C 240 172, 272 178, 280 154
+             C 290 130, 286 100, 320 75 Z"
+          fill="url(#ic5Swoosh)"/>
   </g>
-  <text x="256" y="450" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="42" font-weight="900" fill="#D4AF37" letter-spacing="4">SEBCO</text>
-  <text x="256" y="486" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF" letter-spacing="2" opacity="0.8">PREMIUM TRANSFERS</text>
+  <g transform="translate(280, 130) rotate(-12)">
+    <path d="M 0 30 L 110 22 C 122 22, 128 27, 128 32 C 128 38, 122 43, 110 43 L 0 36 Z" fill="#28B8D6"/>
+    <path d="M 0 30 L -18 4 L 4 0 L 16 22 Z" fill="#28B8D6"/>
+    <path d="M 42 28 L 70 12 L 80 16 L 50 32 Z" fill="#1E8FB5"/>
+  </g>
+  <g transform="translate(310, 230)">
+    <path d="M 25 6 C 25 -6, 60 -6, 60 6" fill="none" stroke="#0F2578" stroke-width="8" stroke-linecap="round"/>
+    <rect x="0" y="12" width="85" height="85" rx="8" ry="8" fill="url(#ic5CaseBody)"/>
+    <rect x="60" y="12" width="25" height="85" fill="url(#ic5CaseSide)"/>
+  </g>
 </svg>

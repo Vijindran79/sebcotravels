@@ -1,5 +1,9 @@
-// Server-side authoritative fare formula:
-//   total = base + (miles * perMile) + sum(addons)
+// Server-side authoritative fare formula. Two vehicle classes:
+//   - 'car' : Executive sedan (Mercedes E-Class / BMW 5-series), 4 pax
+//   - 'van' : Executive MPV (Citroën SpaceTourer), up to 8 pax
+// Per-class base + per-mile come from env (FARE_*_CAR / FARE_*_VAN).
+// Addons (child seats + heavy bags) are the same across classes.
+//   total = base[vehicle] + (miles * perMile[vehicle]) + sum(addons)
 // All numbers are in the major currency unit (e.g. GBP).
 // Stripe needs them in MINOR units (pence); use toStripeAmount() for that.
 
@@ -9,11 +13,20 @@ import { metersToMiles } from "../utils/geo.js";
 
 const round2 = (n) => Math.round(n * 100) / 100;
 
-export function computeFare({ distanceMeters, childSeats = {}, luggage = {} }) {
+function priceFor(vehicleType) {
+  // Default to 'van' (the hero vehicle) if anything weird is passed.
+  const v = vehicleType === 'car' ? 'car' : 'van';
+  return {
+    base:   v === 'car' ? env.FARE_BASE_CAR  : env.FARE_BASE_VAN,
+    perMile: v === 'car' ? env.FARE_PER_MILE_CAR : env.FARE_PER_MILE_VAN,
+    label:  v === 'car' ? 'Executive car'  : 'Executive van',
+  };
+}
+
+export function computeFare({ distanceMeters, childSeats = {}, luggage = {}, vehicleType = 'van' }) {
   const miles = metersToMiles(distanceMeters);
 
-  const base = env.FARE_BASE;
-  const perMile = env.FARE_PER_MILE;
+  const { base, perMile, label } = priceFor(vehicleType);
   const distanceFare = round2(miles * perMile);
 
   const addons = {
@@ -29,6 +42,8 @@ export function computeFare({ distanceMeters, childSeats = {}, luggage = {} }) {
   const total = round2(base + distanceFare + addonsTotal);
 
   return {
+    vehicleType: vehicleType === 'car' ? 'car' : 'van',
+    vehicleLabel: label,
     base,
     perMile,
     distanceMiles: round2(miles),
@@ -40,7 +55,7 @@ export function computeFare({ distanceMeters, childSeats = {}, luggage = {} }) {
   };
 }
 
-export async function quoteFare({ pickup, dropoff, childSeats, luggage }) {
+export async function quoteFare({ pickup, dropoff, childSeats, luggage, vehicleType = 'van' }) {
   const matrix = await getDistanceMatrix({
     origin: { lat: pickup.lat, lng: pickup.lng },
     destination: { lat: dropoff.lat, lng: dropoff.lng },
@@ -50,6 +65,7 @@ export async function quoteFare({ pickup, dropoff, childSeats, luggage }) {
     distanceMeters: matrix.distanceMeters,
     childSeats,
     luggage,
+    vehicleType,
   });
 
   return {

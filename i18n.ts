@@ -75,8 +75,22 @@ export interface AppTranslations {
   why4Title: string; why4Desc: string;
   why5Title: string; why5Desc: string;
   why6Title: string; why6Desc: string;
+  // "How we calculate your fare" section
+  calcEyebrow: string;
+  calcTitle: string;
+  calcSubtitle: string;
+  calcFormulaLabel: string;
+  calcExampleLabel: string;
+  calcExampleRoute: string;
+  calcExampleNote: string;
+  calc1Title: string; calc1Desc: string;
+  calc2Title: string; calc2Desc: string;
+  calc3Title: string; calc3Desc: string;
+  calc4Title: string; calc4Desc: string;
   fleetTitle: string;
   fleetSubtitle: string;
+  carTitle: string;
+  carDesc: string;
   citroenTitle: string;
   citroenDesc: string;
   servicesTitle: string;
@@ -153,10 +167,17 @@ export function persistLanguage(code: Language) {
 const bookingEn: BookingTranslations = {
   widgetTitle: 'Get your fixed price',
   widgetSubtitle: 'Pre-book at least 1 hour ahead. No card needed for a quote.',
+  vehicleTitle: 'Vehicle',
+  vehicleCarLabel: 'Executive car',
+  vehicleCarDesc: 'Up to 4 passengers',
+  vehicleVanLabel: 'Executive van',
+  vehicleVanDesc: 'Up to 8 passengers',
   pickupLabel: 'Pick-up',
-  pickupPlaceholder: 'Address, postcode or airport',
+  pickupPlaceholder: 'Start typing a postcode or street…',
+  pickupHint: 'e.g. "10 Station Road, Reading" or "RG1 1LG" — choose your door number from the list.',
   dropoffLabel: 'Drop-off',
-  dropoffPlaceholder: 'Address, postcode or airport',
+  dropoffPlaceholder: 'Start typing a postcode or street…',
+  dropoffHint: 'e.g. "Terminal 5, Heathrow" or full UK address.',
   scheduledAtLabel: 'Pick-up time',
   scheduledHelp: 'Minimum 1 hour from now.',
   passengersTitle: 'Passengers & luggage',
@@ -203,10 +224,17 @@ const bookingEn: BookingTranslations = {
 const bookingPl: BookingTranslations = {
   widgetTitle: 'Sprawdź stałą cenę',
   widgetSubtitle: 'Rezerwuj z minimum 1-godzinnym wyprzedzeniem. Wycena bez karty.',
+  vehicleTitle: 'Pojazd',
+  vehicleCarLabel: 'Samochód klasy executive',
+  vehicleCarDesc: 'Do 4 pasażerów',
+  vehicleVanLabel: 'Van klasy executive',
+  vehicleVanDesc: 'Do 8 pasażerów',
   pickupLabel: 'Odbiór',
-  pickupPlaceholder: 'Adres, kod pocztowy lub lotnisko',
+  pickupPlaceholder: 'Wpisz kod pocztowy lub ulicę…',
+  pickupHint: 'np. "ul. Marszałkowska 10" lub "00-001" — wybierz numer z listy.',
   dropoffLabel: 'Cel',
-  dropoffPlaceholder: 'Adres, kod pocztowy lub lotnisko',
+  dropoffPlaceholder: 'Wpisz kod pocztowy lub ulicę…',
+  dropoffHint: 'np. "Terminal 5, Heathrow" lub pełny adres.',
   scheduledAtLabel: 'Godzina odbioru',
   scheduledHelp: 'Minimum 1 godzina od teraz.',
   passengersTitle: 'Pasażerowie i bagaż',
@@ -255,10 +283,17 @@ const bookingPl: BookingTranslations = {
 const bookingFallback: BookingTranslations = {
   widgetTitle: bookingEn.widgetTitle,
   widgetSubtitle: bookingEn.widgetSubtitle,
+  vehicleTitle: 'Vehicle',
+  vehicleCarLabel: 'Executive car',
+  vehicleCarDesc: 'Up to 4 passengers',
+  vehicleVanLabel: 'Executive van',
+  vehicleVanDesc: 'Up to 8 passengers',
   pickupLabel: 'Pick-up',
   pickupPlaceholder: bookingEn.pickupPlaceholder,
+  pickupHint: bookingEn.pickupHint,
   dropoffLabel: 'Drop-off',
   dropoffPlaceholder: bookingEn.dropoffPlaceholder,
+  dropoffHint: bookingEn.dropoffHint,
   scheduledAtLabel: bookingEn.scheduledAtLabel,
   scheduledHelp: bookingEn.scheduledHelp,
   passengersTitle: 'Passengers & luggage',
@@ -615,9 +650,28 @@ const en: AppTranslations = {
   why5Desc: 'Plane delayed two hours? We know. Your driver shows up when you actually land — no extra charge.',
   why6Title: 'One chauffeur, not a stranger',
   why6Desc: 'The same DBS-checked, professionally dressed driver from doorstep to doorstep. No last-minute cancellations.',
+  calcEyebrow: 'Transparent pricing',
+  calcTitle: 'How we calculate your fare',
+  calcSubtitle:
+    'No surge, no taximeter, no app fees, no booking fee. The number you see at the end of the form is the number you pay — even on bank holidays and at 03:00 in the morning.',
+  calcFormulaLabel: 'The formula',
+  calcExampleLabel: 'Live example',
+  calcExampleRoute: 'Reading → London Heathrow, 4 passengers, no add-ons',
+  calcExampleNote: 'Distance measured live with Mapbox Directions. The same 27-mile run in a Mercedes E-Class is £67.80.',
+  calc1Title: 'A real base fare, not a coupon',
+  calc1Desc: '£3 (Executive Car) or £5 (Executive Van) covers the driver showing up, the vehicle being spotless, the child seat being fitted, and the first 5 minutes of waiting time at the kerb.',
+  calc2Title: 'Distance from live map data',
+  calc2Desc: 'We use Mapbox Directions for the real road distance — not a straight line, not a taximeter estimate. The miles are what your driver actually drives, including M25/M40 routing.',
+  calc3Title: 'One price, no surge',
+  calc3Desc: 'The same fare on Christmas Day as on a Tuesday in February. The same fare in traffic as at 4 am. We never multiply by a "demand factor" — the price is the price.',
+  calc4Title: 'Pay only when the journey completes',
+  calc4Desc: 'Your card is pre-authorised at booking (no money leaves your account). Stripe captures the fare only after you arrive safely. No upfront payment, no refunds to chase.',
   fleetTitle: 'Our Premium Fleet',
   fleetSubtitle:
-    'Spacious, immaculate, and luxurious vehicles. Meticulously maintained for your safety and comfort.',
+    'Two executive vehicles. Same fixed price, same DBS-checked chauffeur, same child seats, same flight tracking. Choose the one that fits the trip.',
+  carTitle: 'Black executivo saloon — 4 seats',
+  carDesc:
+    'Our executive saloon for 1–4 passengers. Black leather interior, climate control, USB-C charging, room for 2 large suitcases plus hand luggage. Perfect for solo business trips, couples and small families who want a quieter, more fuel-efficient ride. Pre-book from £3 base + £2.40 per mile.',
   citroenTitle: 'Black Citroën SpaceTourer — 8 seats',
   citroenDesc:
     'Our flagship is a black Citroën SpaceTourer executive people carrier — eight individually adjustable leather seats, panoramic glass roof, climate control front-to-back, USB-C charging at every row, and a boot that swallows eight large suitcases or a full set of prams, ski bags and golf clubs. Step inside your private sanctuary on the road, guided by a DBS-checked professional chauffeur.',
@@ -739,6 +793,22 @@ const pl: AppTranslations = {
   why5Desc: 'Samolot opóźniony? Wiemy o tym. Kierowca przyjeżdża, gdy faktycznie lądujesz — bez dopłat.',
   why6Title: 'Jeden szofer, nie obcy',
   why6Desc: 'Ten sam kierowca z DBS, ubrany profesjonalnie, od drzwi do drzwi. Żadnych anulowań w ostatniej chwili.',
+  calcEyebrow: 'Przejrzyste ceny',
+  calcTitle: 'Jak obliczamy cenę',
+  calcSubtitle:
+    'Bez dopłat za popyt, bez taksometru, bez opłat za aplikację, bez opłaty za rezerwację. Kwota, którą widzisz na końcu formularza, to kwota, którą płacisz — nawet w święta i o 03:00 w nocy.',
+  calcFormulaLabel: 'Wzór',
+  calcExampleLabel: 'Przykład na żywo',
+  calcExampleRoute: 'Reading → London Heathrow, 4 pasażerów, bez dodatków',
+  calcExampleNote: 'Dystans mierzony na żywo przez Mapbox Directions. Ta sama trasa 27 mil Mercedesem E-Klasy kosztuje 67,80 £.',
+  calc1Title: 'Realna opłata bazowa, nie kupon',
+  calc1Desc: '3 £ (samochód) lub 5 £ (van) obejmuje: przyjazd kierowcy, czysty pojazd, zamontowany fotelik i pierwsze 5 minut oczekiwania na krawężniku.',
+  calc2Title: 'Dystans z danych mapy na żywo',
+  calc2Desc: 'Używamy Mapbox Directions dla prawdziwego dystansu drogowego — nie prostej linii, nie szacunku z taksometru. Mile to to, co faktycznie przejedzie Twój kierowca, w tym trasa M25/M40.',
+  calc3Title: 'Jedna cena, bez dopłat',
+  calc3Desc: 'Ta sama cena w Boże Narodzenie co we wtorek w lutym. Ta sama cena w korku co o 4 rano. Nigdy nie mnożymy przez "czynnik popytu" — cena jest ceną.',
+  calc4Title: 'Płać dopiero po zakończeniu podróży',
+  calc4Desc: 'Twoja karta jest preautoryzowana przy rezerwacji (pieniądze nie schodzą z konta). Stripe pobiera kwotę dopiero po bezpiecznym dotarciu. Bez przedpłat, bez czekania na zwroty.',
   fleetTitle: 'Nasza Flota Premium',
   fleetSubtitle:
     'Przestronne, nieskazitelne i luksusowe pojazdy. Starannie utrzymane dla Twojego bezpieczeństwa i komfortu.',

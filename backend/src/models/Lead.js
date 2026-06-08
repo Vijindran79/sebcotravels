@@ -22,6 +22,8 @@ const placeSchema = new mongoose.Schema(
 
 const fareSnapshotSchema = new mongoose.Schema(
   {
+    vehicleType: { type: String, enum: ['car', 'van'], default: 'van' },
+    vehicleLabel: String,
     base: Number,
     perMile: Number,
     distanceMiles: Number,
@@ -40,6 +42,7 @@ const leadSchema = new mongoose.Schema(
       email: { type: String, trim: true, lowercase: true, required: true },
       phone: { type: String, trim: true, required: true },
     },
+    vehicleType: { type: String, enum: ['car', 'van'], default: 'van' },
     pickup: { type: placeSchema, required: true },
     dropoff: { type: placeSchema, required: true },
     passengers: {
