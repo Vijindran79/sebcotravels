@@ -89,7 +89,7 @@ function customerConfirmationHtml(lead) {
           ${fareRow}
         </table>
         <p style="margin:0 0 24px 0;color:#555;line-height:1.5;">If anything changes, just reply to this email or call <a href="tel:+447411113636" style="color:#0B1F33;font-weight:bold;">+44 7411 113636</a>.</p>
-        <p style="margin:0;color:#999;font-size:12px;">SEBCO Travels Ltd &middot; Black Citroën SpaceTourer &middot; <a href="https://sebcotravels.co.uk" style="color:#999;">sebcotravels.co.uk</a></p>
+        <p style="margin:0;color:#999;font-size:12px;">SEBCO Travels Ltd &middot; Executive MPV &middot; <a href="https://sebcotravels.co.uk" style="color:#999;">sebcotravels.co.uk</a></p>
       </td></tr>
     </table>
   </td></tr>

@@ -31,7 +31,7 @@ const schema = z.object({
   BREVO_SITE_ORIGIN: z.string().url().default('http://localhost:3000'),
 
   // Per-vehicle pricing. Car is a smaller sedan (4 pax, cheaper to run),
-  // van is the 8-seat MPV. Tuned to sit BELOW Addison Lee + Uber Black on
+  // van is the 8-seat MPV. Tuned to stay competitive with the UK executive car market on
   // the same distance while still giving the operator a healthy margin.
   FARE_BASE_CAR:  z.coerce.number().nonnegative().default(3.00),
   FARE_PER_MILE_CAR: z.coerce.number().nonnegative().default(2.40),

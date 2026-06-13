@@ -1,6 +1,6 @@
 # Photography swap guide — SEBCO Travels
 
-Right now the site uses two placeholder photos from Unsplash so it looks professional out of the box. They are temporary. As soon as you have your own photos of the **black Citroën SpaceTourer**, drop them in and the site will use yours automatically — no code changes needed.
+right now the site uses two reference photos from Unsplash so it looks professional out of the box. They are temporary. As soon as you have your own photos of the **executive MPV**, drop them in and the site will use yours automatically — no code changes needed.
 
 This guide tells you exactly which photos to take, what size to make them, what filenames to use, and where to put them.
 
@@ -10,8 +10,8 @@ This guide tells you exactly which photos to take, what size to make them, what 
 
 | Filename to save it as | Where it appears | Size (px) | What to shoot |
 | --- | --- | --- | --- |
-| `public/img/hero.jpg`              | Full-bleed background of the dark hero on every page (home + 6 route pages) | **2400 × 1350** (16:9) | 3/4 front view of the **clean, black SpaceTourer**, golden-hour daylight, dark moody background (sunset, airport at dusk, country road). Slight motion blur on the wheels OK. |
-| `public/img/fleet-spacetourer.jpg` | Card in the "Our Premium Fleet" section | **1200 × 675** (16:9) | Static side-profile of the van against a clean background (white wall, brick, neutral). All doors closed, plates legible. |
+| `public/img/hero.jpg`              | Full-bleed background of the dark hero on every page (home + 6 route pages) | **2400 × 1350** (16:9) | 3/4 front view of the **clean, executive MPV**, golden-hour daylight, dark moody background (sunset, airport at dusk, country road). Slight motion blur on the wheels OK. |
+| `public/img/fleet-mpv.jpg` | Card in the "Our Premium Fleet" section | **1200 × 675** (16:9) | Static side-profile of the MPV against a clean background (white wall, brick, neutral). All doors closed, plates legible. |
 | `public/img/interior.jpg`          | Reserved for a future section (already used in JSON-LD) | **1600 × 900** (16:9) | Interior shot looking from the back row toward the front. Leather seats clean, USB ports visible, child seat fitted if possible. |
 | `public/og-image.jpg`              | Social-media share preview (Facebook, WhatsApp, Twitter) | **1200 × 630** (1.91:1) | Same as hero but cropped tighter — should show SEBCO logo overlay if possible. Avoid important detail in the bottom right corner (some platforms crop it). |
 
@@ -70,7 +70,7 @@ public/
 ├── og-image.jpg                  (1200x630)
 └── img/
     ├── hero.jpg                  (2400x1350)
-    ├── fleet-spacetourer.jpg     (1200x675)
+    ├── fleet-mpv.jpg     (1200x675)
     └── interior.jpg              (1600x900)
 ```
 
@@ -93,11 +93,11 @@ Replace with:
 const HERO_IMAGE = '/img/hero.jpg';
 ```
 
-Find the FleetCard call (search the file for `// TODO: replace with /img/citroen-spacetourer.jpg`):
+Find the FleetCard call (search the file for `// TODO: replace with /img/fleet-mpv.jpg`):
 
 ```tsx
 <FleetCard
-  // TODO: replace with /img/citroen-spacetourer.jpg — see docs/photography.md
+  // TODO: replace with /img/fleet-mpv.jpg — see docs/photography.md
   image="https://images.unsplash.com/photo-1582453699396-3a8a2d103b41?q=80&w=2070&auto=format&fit=crop"
   ...
 />
@@ -107,7 +107,7 @@ Replace with:
 
 ```tsx
 <FleetCard
-  image="/img/fleet-spacetourer.jpg"
+  image="/img/fleet-mpv.jpg"
   ...
 />
 ```

@@ -32,7 +32,7 @@ const BUSINESS_WHATSAPP_HREF =
 
 // ===========================================================================
 // Featured hero video — a 4K chauffeur video that plays muted in the
-// background of the hero section. The still image (spacetourer-hero.jpg)
+// background of the hero section. The still image (fleet-saloon.jpg)
 // sits underneath as a poster, so the hero always looks full even on
 // browsers/devices that block YouTube autoplay. Replace the ID with a new
 // one if you re-cut the reel.
@@ -488,7 +488,7 @@ const Hero: FC<HeroProps> = ({ t, apiBaseUrl, mapboxAccessToken }) => (
         reliability — the same image is reused in the Fleet section. */}
     <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
       <img
-        src="/img/spacetourer-hero.jpg"
+        src="/img/fleet-saloon.jpg"
         alt="Black executive MPV used for chauffeur transfers"
         aria-hidden="true"
         loading="eager"
@@ -970,16 +970,16 @@ const Fleet: FC<{ t: AppTranslations }> = ({ t }) => (
       </div>
       <div className="mt-12 grid gap-6 sm:grid-cols-2 max-w-4xl mx-auto">
         <FleetCard
-          image="/img/saloon-card.jpg"
+          image="/img/fleet-saloon.jpg"
           title={t.carTitle}
           description={t.carDesc}
-          badge="4 seats · Executive saloon"
+          badge="4 seats · Saloon"
         />
         <FleetCard
-          image="/img/spacetourer-hero.jpg"
+          image="/img/fleet-mpv.webp"
           title={t.citroenTitle}
           description={t.citroenDesc}
-          badge="8 seats · Executive MPV"
+          badge="6 seats · 6 Seater"
         />
       </div>
     </div>

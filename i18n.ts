@@ -428,7 +428,7 @@ const routePagePl: RoutePageTranslations = {
 
 // For ES/FR/DE/IT, only the visible chrome (hero, included, why, CTA, FAQ
 // questions) is translated; FAQ answer bodies fall back to English. This is
-// how Addison Lee / Wheely handle their less-common languages: the user
+// how other premium services handle their less-common languages: the user
 // always understands the form in their language; the long FAQ body
 // doesn't need translation for a hire business.
 const routePageEs: RoutePageTranslations = {
@@ -637,7 +637,7 @@ const en: AppTranslations = {
   howStep3Title: 'Travel in comfort',
   howStep3Desc: 'Your chauffeur arrives 5 minutes early. Track the journey live on your phone. Pay only when you arrive safely.',
   whyTitle: 'Why families pick SEBCO',
-  whySubtitle: 'Built around the way families and groups actually travel — not how Uber does it.',
+  whySubtitle: 'Built around the way families and groups actually travel — not how standard ride-hail works.',
   why1Title: 'Up to 8 in one van',
   why1Desc: 'No splitting your group into two cars. Everyone travels together, with the luggage, in one premium people-carrier.',
   why2Title: 'Real luggage space',
@@ -657,7 +657,7 @@ const en: AppTranslations = {
   calcFormulaLabel: 'The formula',
   calcExampleLabel: 'Live example',
   calcExampleRoute: 'Reading → London Heathrow, 4 passengers, no add-ons',
-  calcExampleNote: 'Distance measured live with Mapbox Directions. The same 27-mile run in a Mercedes E-Class is £67.80.',
+  calcExampleNote: 'Distance measured live with Mapbox Directions. The same 27-mile run in our executive saloon is £67.80.',
   calc1Title: 'A real base fare, not a coupon',
   calc1Desc: '£3 (Executive Car) or £5 (Executive Van) covers the driver showing up, the vehicle being spotless, the child seat being fitted, and the first 5 minutes of waiting time at the kerb.',
   calc2Title: 'Distance from live map data',
@@ -669,12 +669,12 @@ const en: AppTranslations = {
   fleetTitle: 'Our Premium Fleet',
   fleetSubtitle:
     'Two executive vehicles. Same fixed price, same DBS-checked chauffeur, same child seats, same flight tracking. Choose the one that fits the trip.',
-  carTitle: 'Black executivo saloon — 4 seats',
+  carTitle: 'Saloon Car',
   carDesc:
     'Our executive saloon for 1–4 passengers. Black leather interior, climate control, USB-C charging, room for 2 large suitcases plus hand luggage. Perfect for solo business trips, couples and small families who want a quieter, more fuel-efficient ride. Pre-book from £3 base + £2.40 per mile.',
-  citroenTitle: 'Black Citroën SpaceTourer — 8 seats',
+  citroenTitle: '6 Seater',
   citroenDesc:
-    'Our flagship is a black Citroën SpaceTourer executive people carrier — eight individually adjustable leather seats, panoramic glass roof, climate control front-to-back, USB-C charging at every row, and a boot that swallows eight large suitcases or a full set of prams, ski bags and golf clubs. Step inside your private sanctuary on the road, guided by a DBS-checked professional chauffeur.',
+    'Our flagship is our flagship executive people carrier — eight individually adjustable leather seats, panoramic glass roof, climate control front-to-back, USB-C charging at every row, and a boot that swallows eight large suitcases or a full set of prams, ski bags and golf clubs. Step inside your private sanctuary on the road, guided by a DBS-checked professional chauffeur.',
   servicesTitle: 'Our Services',
   servicesSubtitle: 'Tailored to meet your needs, with a focus on quality and reliability.',
   airportTitle: 'Airport Transfers',
@@ -800,7 +800,7 @@ const pl: AppTranslations = {
   calcFormulaLabel: 'Wzór',
   calcExampleLabel: 'Przykład na żywo',
   calcExampleRoute: 'Reading → London Heathrow, 4 pasażerów, bez dodatków',
-  calcExampleNote: 'Dystans mierzony na żywo przez Mapbox Directions. Ta sama trasa 27 mil Mercedesem E-Klasy kosztuje 67,80 £.',
+  calcExampleNote: 'Dystans mierzony na żywo przez Mapbox Directions. Ta sama trasa 27 mil naszą salonką kosztuje 67,80 £.',
   calc1Title: 'Realna opłata bazowa, nie kupon',
   calc1Desc: '3 £ (samochód) lub 5 £ (van) obejmuje: przyjazd kierowcy, czysty pojazd, zamontowany fotelik i pierwsze 5 minut oczekiwania na krawężniku.',
   calc2Title: 'Dystans z danych mapy na żywo',
@@ -812,9 +812,9 @@ const pl: AppTranslations = {
   fleetTitle: 'Nasza Flota Premium',
   fleetSubtitle:
     'Przestronne, nieskazitelne i luksusowe pojazdy. Starannie utrzymane dla Twojego bezpieczeństwa i komfortu.',
-  citroenTitle: 'Czarny Citroën SpaceTourer — 8 miejsc',
+  citroenTitle: '6-osobowy',
   citroenDesc:
-    'Nasz flagowy pojazd to czarny Citroën SpaceTourer w wersji executive — osiem regulowanych skórzanych foteli, panoramiczny dach, niezależna klimatyzacja w każdym rzędzie, ładowarki USB-C dla każdego pasażera oraz bagażnik na osiem dużych walizek lub komplet wózków, nart i kijów golfowych. Wejdź do prywatnego sanktuarium na drodze, prowadzonego przez sprawdzonego DBS profesjonalnego szofera.',
+    'Nasz flagowy pojazd to nasz executive people carrier — osiem regulowanych skórzanych foteli, panoramiczny dach, niezależna klimatyzacja w każdym rzędzie, ładowarki USB-C dla każdego pasażera oraz bagażnik na osiem dużych walizek lub komplet wózków, nart i kijów golfowych. Wejdź do prywatnego sanktuarium na drodze, prowadzonego przez sprawdzonego DBS profesjonalnego szofera.',
   servicesTitle: 'Nasze Usługi',
   servicesSubtitle: 'Dostosowane do Twoich potrzeb, z naciskiem na jakość i niezawodność.',
   airportTitle: 'Transfery Lotniskowe',
@@ -936,9 +936,9 @@ const es: AppTranslations = {
   fleetTitle: 'Nuestra Flota Premium',
   fleetSubtitle:
     'Vehículos espaciosos, inmaculados y lujosos. Mantenidos con esmero para tu seguridad y comodidad.',
-  citroenTitle: 'Citroën SpaceTourer negro — 8 plazas',
+  citroenTitle: '6 plazas',
   citroenDesc:
-    'Nuestro buque insignia es un Citroën SpaceTourer negro ejecutivo — ocho asientos de cuero ajustables individualmente, techo panorámico, climatización fila a fila, carga USB-C en cada fila y un maletero capaz de absorber ocho maletas grandes o un kit completo de cochecitos, esquís y palos de golf. Entra en tu santuario privado en la carretera, guiado por un chófer profesional con DBS.',
+    'Nuestro buque insignia es nuestro people carrier ejecutivo negro — ocho asientos de cuero ajustables individualmente, techo panorámico, climatización fila a fila, carga USB-C en cada fila y un maletero capaz de absorber ocho maletas grandes o un kit completo de cochecitos, esquís y palos de golf. Entra en tu santuario privado en la carretera, guiado por un chófer profesional con DBS.',
   servicesTitle: 'Nuestros Servicios',
   servicesSubtitle: 'A medida de tus necesidades, con foco en calidad y fiabilidad.',
   airportTitle: 'Traslados al aeropuerto',
@@ -1060,9 +1060,9 @@ const fr: AppTranslations = {
   fleetTitle: 'Notre Flotte Premium',
   fleetSubtitle:
     'Véhicules spacieux, impeccables et luxueux. Soigneusement entretenus pour votre sécurité et votre confort.',
-  citroenTitle: 'Citroën SpaceTourer noir — 8 places',
+  citroenTitle: '6 places',
   citroenDesc:
-    'Notre vaisseau amiral est un Citroën SpaceTourer noir executive — huit sièges en cuir réglables individuellement, toit panoramique, climatisation rang par rang, recharge USB-C à chaque rangée et un coffre capable d’absorber huit grandes valises ou tout un kit de poussettes, skis et clubs de golf. Montez dans votre sanctuaire privé sur la route, guidé par un chauffeur professionnel vérifié DBS.',
+    'Notre vaisseau amiral est notre people carrier executive noir — huit sièges en cuir réglables individuellement, toit panoramique, climatisation rang par rang, recharge USB-C à chaque rangée et un coffre capable d’absorber huit grandes valises ou tout un kit de poussettes, skis et clubs de golf. Montez dans votre sanctuaire privé sur la route, guidé par un chauffeur professionnel vérifié DBS.',
   servicesTitle: 'Nos Services',
   servicesSubtitle: 'Sur mesure selon vos besoins, avec un focus sur la qualité et la fiabilité.',
   airportTitle: 'Transferts aéroport',
@@ -1184,9 +1184,9 @@ const de: AppTranslations = {
   fleetTitle: 'Unsere Premium-Flotte',
   fleetSubtitle:
     'Geräumige, makellose und luxuriöse Fahrzeuge. Sorgfältig gewartet für Ihre Sicherheit und Ihren Komfort.',
-  citroenTitle: 'Schwarzer Citroën SpaceTourer — 8 Sitze',
+  citroenTitle: '6-Sitzer',
   citroenDesc:
-    'Unser Flaggschiff ist ein schwarzer Citroën SpaceTourer Executive — acht einzeln verstellbare Ledersitze, Panoramaglasdach, Klimaregelung Reihe für Reihe, USB-C-Laden in jeder Reihe und ein Kofferraum, der acht große Koffer oder einen kompletten Satz Kinderwagen, Skier und Golfschläger schluckt. Betreten Sie Ihr privates Heiligtum auf der Straße, geführt von einem DBS-geprüften professionellen Chauffeur.',
+    'Unser Flaggschiff ist unser schwarzes Executive People Carrier — acht einzeln verstellbare Ledersitze, Panoramaglasdach, Klimaregelung Reihe für Reihe, USB-C-Laden in jeder Reihe und ein Kofferraum, der acht große Koffer oder einen kompletten Satz Kinderwagen, Skier und Golfschläger schluckt. Betreten Sie Ihr privates Heiligtum auf der Straße, geführt von einem DBS-geprüften professionellen Chauffeur.',
   servicesTitle: 'Unsere Leistungen',
   servicesSubtitle: 'Maßgeschneidert nach Ihren Bedürfnissen, mit Fokus auf Qualität und Zuverlässigkeit.',
   airportTitle: 'Flughafentransfers',
@@ -1308,9 +1308,9 @@ const it: AppTranslations = {
   fleetTitle: 'La Nostra Flotta Premium',
   fleetSubtitle:
     'Veicoli spaziosi, impeccabili e lussuosi. Manutenuti con cura per la vostra sicurezza e comfort.',
-  citroenTitle: 'Citroën SpaceTourer nero — 8 posti',
+  citroenTitle: '6 posti',
   citroenDesc:
-    'La nostra ammiraglia è un Citroën SpaceTourer nero executivo — otto sedili in pelle regolabili individualmente, tetto panoramico in vetro, climatizzazione fila per fila, ricarica USB-C in ogni fila e un bagagliaio in grado di contenere otto valigie grandi o un set completo di passeggini, sci e mazze da golf. Entrate nel vostro santuario privato su strada, guidati da un autista professionale con verifica DBS.',
+    'La nostra ammiraglia è il nostro people carrier executivo nero — otto sedili in pelle regolabili individualmente, tetto panoramico in vetro, climatizzazione fila per fila, ricarica USB-C in ogni fila e un bagagliaio in grado di contenere otto valigie grandi o un set completo di passeggini, sci e mazze da golf. Entrate nel vostro santuario privato su strada, guidati da un autista professionale con verifica DBS.',
   servicesTitle: 'I Nostri Servizi',
   servicesSubtitle: 'Su misura per le vostre esigenze, con focus su qualità e affidabilità.',
   airportTitle: 'Transfer Aeroportuali',

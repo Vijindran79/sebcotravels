@@ -4,7 +4,7 @@
  *
  * Pre-booking widget. Forces every booking to be at least 1 hour in the
  * future (the operator is a solo van driver and cannot dispatch instantly).
- * Designed to sit inside the dark hero, Addison-Lee style, or stand alone.
+ * Designed to sit inside the dark hero, or stand alone.
  */
 
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';

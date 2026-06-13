@@ -1,6 +1,6 @@
 // Server-side authoritative fare formula. Two vehicle classes:
-//   - 'car' : Executive sedan (Mercedes E-Class / BMW 5-series), 4 pax
-//   - 'van' : Executive MPV (Citroën SpaceTourer), up to 8 pax
+//   - 'car' : Executive sedan, 4 pax
+//   - 'van' : Executive MPV, up to 8 pax
 // Per-class base + per-mile come from env (FARE_*_CAR / FARE_*_VAN).
 // Addons (child seats + heavy bags) are the same across classes.
 //   total = base[vehicle] + (miles * perMile[vehicle]) + sum(addons)

@@ -52,3 +52,6 @@ Thumbs.db
 # ===== Local image uploads (use real /public/img/ files instead) =====
 public/img/user-uploads/
 public/uploads/
+
+# Legacy brand-named images (kept locally for reference, not in repo)
+public/img/*-legacy.*
