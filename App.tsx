@@ -23,6 +23,7 @@ import {
 const BUSINESS_PHONE = '+44 7411 113636';
 const BUSINESS_PHONE_HREF = 'tel:+447411113636';
 const BUSINESS_EMAIL = 'caniseb1@gmail.com';
+const BUSINESS_ADDRESS = '32 Abbey Drive, DA2 7WP';
 // WhatsApp uses E.164 with no '+' or spaces.
 const BUSINESS_WHATSAPP = '447411113636';
 const BUSINESS_WHATSAPP_HREF =

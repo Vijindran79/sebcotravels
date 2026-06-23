@@ -148,6 +148,12 @@ function isFullUkPostcode(s: string): boolean {
   return UK_POSTCODE_FULL.test(s.trim());
 }
 
+function extractPostcode(s: string): string | null {
+  // Try to extract a postcode pattern from the string (e.g. from "32 da2 7wp" or "da2 7wp")
+  const match = s.match(/([A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2})/i);
+  return match ? match[1].trim() : null;
+}
+
 const initialPlace: PlaceValue = { address: '', lat: null, lng: null };
 
 function formatFare(fare: FareSnapshot): string {
@@ -189,6 +195,19 @@ interface MapboxSuggestion {
   mapbox_id: string;
   place_formatted?: string;
   full_address?: string;
+}
+
+function buildSuggestionAddress(s: MapboxSuggestion): string {
+  if (s.full_address) return s.full_address;
+  const name = s.name?.trim() || '';
+  const formatted = s.place_formatted?.trim() || '';
+  if (!name) return formatted || name;
+  if (!formatted || formatted.includes(name)) return formatted || name;
+  return `${name}, ${formatted}`;
+}
+
+function normalizeSearchQuery(q: string): string {
+  return q.replace(/\s*,\s*/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
 const SEARCHBOX_SUGGEST = 'https://api.mapbox.com/search/searchbox/v1/suggest';
@@ -238,16 +257,17 @@ const PlaceInput: FC<PlaceInputProps> = ({ id, label, placeholder, hint, value, 
     debounceRef.current = window.setTimeout(async () => {
       setLoading(true);
       try {
+        const normalized = normalizeSearchQuery(q);
         // UK postcodes (e.g. "RG1 1AA", "SW1A 1AA") get the cleanest results
         // when we ask for `address` first (full PAF door numbers), then
         // `postcode`, then `place`. Limit 10 so users see a real list.
         const params = new URLSearchParams({
-          q,
+          q: normalized,
           session_token: sessionToken,
           access_token: mapboxAccessToken,
           country: 'gb',
           language: 'en',
-          types: 'address,postcode,place,locality,street,district',
+          types: 'address,postcode,place,locality,street,district,poi',
           limit: '10',
         });
         const res = await fetch(`${SEARCHBOX_SUGGEST}?${params.toString()}`);
@@ -256,14 +276,15 @@ const PlaceInput: FC<PlaceInputProps> = ({ id, label, placeholder, hint, value, 
         // If the user typed a full UK postcode (with the space), do a second
         // call asking for every address under that postcode — this is the
         // "door number list" the user asked for.
-        if (isFullUkPostcode(q.trim())) {
+        const detectedPostcode = extractPostcode(normalized);
+        if (detectedPostcode && isFullUkPostcode(detectedPostcode)) {
           const expand = new URLSearchParams({
-            q,
+            q: detectedPostcode,
             session_token: sessionToken,
             access_token: mapboxAccessToken,
             country: 'gb',
             language: 'en',
-            types: 'address',
+            types: 'address,poi',
             limit: '10',
           });
           const res2 = await fetch(`${SEARCHBOX_SUGGEST}?${expand.toString()}`);
@@ -290,7 +311,7 @@ const PlaceInput: FC<PlaceInputProps> = ({ id, label, placeholder, hint, value, 
   }
 
   async function selectSuggestion(s: MapboxSuggestion) {
-    const fallbackText = s.full_address || s.place_formatted || s.name;
+    const fallbackText = buildSuggestionAddress(s);
     onChange({ address: fallbackText, lat: null, lng: null });
     setOpen(false);
     setSuggestions([]);
@@ -386,27 +407,33 @@ const PlaceInput: FC<PlaceInputProps> = ({ id, label, placeholder, hint, value, 
           role="listbox"
           className="absolute z-50 mt-1 w-full max-h-72 overflow-auto rounded-md border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0F2842] shadow-xl"
         >
-          {suggestions.map((s, i) => (
-            <li
-              key={s.mapbox_id || `${s.name}-${i}`}
-              role="option"
-              aria-selected={i === activeIndex}
-              onMouseDown={(e) => { e.preventDefault(); selectSuggestion(s); }}
-              onMouseEnter={() => setActiveIndex(i)}
-              className={`px-3 min-h-[44px] flex items-center cursor-pointer text-sm border-b last:border-b-0 border-gray-100 dark:border-white/5 ${
-                i === activeIndex
-                  ? 'bg-[#D4AF37]/15 text-gray-900 dark:text-white'
-                  : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5'
-              }`}
-            >
-              <div className="font-semibold leading-tight">{s.name}</div>
-              {s.place_formatted && (
-                <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate mt-0.5">
-                  {s.place_formatted}
-                </div>
-              )}
-            </li>
-          ))}
+          {suggestions.map((s, i) => {
+            const addressText = buildSuggestionAddress(s);
+            const secondaryText = s.place_formatted && s.place_formatted.trim() !== addressText.trim()
+              ? s.place_formatted.trim()
+              : undefined;
+            return (
+              <li
+                key={s.mapbox_id || `${s.name}-${i}`}
+                role="option"
+                aria-selected={i === activeIndex}
+                onMouseDown={(e) => { e.preventDefault(); selectSuggestion(s); }}
+                onMouseEnter={() => setActiveIndex(i)}
+                className={`px-3 min-h-[44px] flex flex-col justify-center cursor-pointer text-sm border-b last:border-b-0 border-gray-100 dark:border-white/5 ${
+                  i === activeIndex
+                    ? 'bg-[#D4AF37]/15 text-gray-900 dark:text-white'
+                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5'
+                }`}
+              >
+                <div className="font-semibold leading-tight">{addressText}</div>
+                {secondaryText && (
+                  <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                    {secondaryText}
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
